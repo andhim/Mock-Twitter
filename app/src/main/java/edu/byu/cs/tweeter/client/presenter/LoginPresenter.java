@@ -20,7 +20,7 @@ public class LoginPresenter implements UserService.LoginObserver {
     @Override
     public void loginSucceeded(AuthToken authToken, User user) {
         view.navigateToUser(user);
-        view.clearErrorMessage(); //TODO: check if it is clearInfoMessage();
+        view.clearErrorMessage();
         view.displayInfoMessage("Hello " + user.getName());
     }
 

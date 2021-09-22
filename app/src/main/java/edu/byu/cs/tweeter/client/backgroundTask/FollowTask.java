@@ -14,6 +14,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class FollowTask implements Runnable {
     private static final String LOG_TAG = "FollowTask";
 
+    //TODO: constants in every single Task class
     public static final String SUCCESS_KEY = "success";
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
@@ -38,6 +39,7 @@ public class FollowTask implements Runnable {
         this.messageHandler = messageHandler;
     }
 
+    //TODO: same structure with other task classes (everything below from here)
     @Override
     public void run() {
         try {

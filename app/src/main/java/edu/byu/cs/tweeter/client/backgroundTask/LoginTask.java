@@ -82,7 +82,7 @@ public class LoginTask implements Runnable {
         messageHandler.sendMessage(msg);
     }
 
-    private void sendFailedMessage(String message) { //TODO: not being used?
+    private void sendFailedMessage(String message) {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, false);
         msgBundle.putString(MESSAGE_KEY, message);

@@ -337,7 +337,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
                     totalItemCount && firstVisibleItemPosition >= 0) {
                 loadMoreItems(followingRecyclerViewAdapter.isInitial);
             }
-
         }
     }
 

@@ -1,46 +1,39 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.widget.Toast;
+import android.util.Log;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.view.main.following.FollowingFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements FollowService.GetFollowingObserver, UserService.GetUserObserver {
+public class FollowerPresenter implements FollowService.GetFollowersObserver, UserService.GetUserObserver {
 
-    //GetFollowingObserver
+    //GetFollowersObserver
     @Override
-    public void getFollowingSucceeded(List<User> followees, User lastFollowee, boolean hasMorePages) {
-        this.lastFollowee = lastFollowee;
+    public void getFollowersSucceeded(List<User> followers, User lastFollower, boolean hasMorePages) {
+        this.lastFollower = lastFollower;
         this.hasMorePages = hasMorePages;
         this.isLoading = false;
 
-        view.setLoading(isLoading);
-        view.addItems(followees);
+        view.setLoading(this.isLoading);
+        view.addItems(followers);
     }
 
     @Override
-    public void getFollowingFailed(String message) {
-        view.displayErrorMessage("Failed to get following: " + message);
+    public void getFollowersFailed(String message) {
         this.isLoading = false;
-
         view.setLoading(isLoading);
+        view.displayErrorMessage("Failed to get followers: " + message);
     }
 
     @Override
-    public void getFollowingThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get following because of exception: " + ex.getMessage());
+    public void getFollowersThrewException(Exception ex) {
         this.isLoading = false;
-
         view.setLoading(isLoading);
+        view.displayErrorMessage("Failed to get followers because of exception: " + ex.getMessage());
     }
 
     //GetUserObserver
@@ -60,33 +53,47 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
         view.displayErrorMessage("Failed to get user's profile because of exception: " + ex.getMessage());
     }
 
-    //View Interface
     public interface View {
-
-        void addItems(List<User> followees);
+        void addItems(List<User> followers);
         void navigateToUser(User user);
 
         void displayErrorMessage(String message);
         void displayInfoMessage(String message);
 
         void setLoading(boolean value);
+
+        void logger(String message);
     }
 
-    //FollowingPresenter
+    //FollowerPresenter
     private static final int PAGE_SIZE = 10;
 
     private View view;
     private User targetUser;
     private AuthToken authToken;
 
-    private User lastFollowee;
+    private User lastFollower;
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public FollowingPresenter(View view, AuthToken authToken, User targetUser) {
+    public FollowerPresenter(View view, AuthToken authToken, User targetUser) {
         this.view = view;
-        this.targetUser = targetUser;
         this.authToken = authToken;
+        this.targetUser = targetUser;
+    }
+
+    public void gotoUser(String alias) {
+        view.displayInfoMessage("Getting user's profile...");
+        new UserService().getUser(authToken, alias, this);
+    }
+
+    public void nullChecker(User user) {
+        if (user == null) {
+            view.logger("user is null!");
+        }
+        if (user != null && user.getImageBytes() == null) {
+            view.logger("image bytes are null");
+        }
     }
 
     public void loadMoreItems(boolean isInitial) {
@@ -94,19 +101,16 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
             if (!isLoading) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FollowService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
+                new FollowService().getFollowers(authToken, targetUser, PAGE_SIZE, lastFollower, this);
             }
         } else {
             if (!isLoading && hasMorePages) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FollowService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
+                new FollowService().getFollowers(authToken, targetUser, PAGE_SIZE, lastFollower, this);
             }
         }
     }
 
-    public void gotoUser(String alias) {
-        view.displayInfoMessage("Getting user's profile...");
-        new UserService().getUser(authToken, alias, this);
-    }
+
 }
