@@ -82,9 +82,9 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     //Unfollow
     @Override
-    public void updateUnfollow() {
+    public void updateFollow(boolean removed) {
         updateSelectedUserFollowingAndFollowers();
-        updateFollowButton(true);
+        updateFollowButton(removed);
     }
 
     @Override
@@ -211,22 +211,23 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO: not belong to view?
                 followButton.setEnabled(false);
 
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
                     presenter.unfollow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
                     //TODO: okay to use displayInfoMessage?
                     displayInfoMessage("UNFOLLOW","Removing " + selectedUser.getName() + "...");
-//                    Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 } else {
-                    //TODO; Follow Task
-                    FollowTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
-                            selectedUser, new FollowHandler());
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(followTask);
-
-                    Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
+                    presenter.follow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
+                    //TODO: okay to use displayInfoMessage?
+                    displayInfoMessage("FOLLOW","Adding " + selectedUser.getName() + "...");
+                    //Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 }
+
+                //TODO: not belong to view?
+//                followButton.setEnabled(true);
             }
         });
     }
@@ -372,27 +373,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
 
-
-    // FollowHandler
-
-    private class FollowHandler extends Handler {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(FollowTask.SUCCESS_KEY);
-            if (success) {
-                updateSelectedUserFollowingAndFollowers();
-                updateFollowButton(false);
-            } else if (msg.getData().containsKey(FollowTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(FollowTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to follow: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(FollowTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(FollowTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to follow because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-
-            followButton.setEnabled(true);
-        }
-    }
 
 
     // PostStatusHandler

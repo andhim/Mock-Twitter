@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver, FollowService.UnfollowObserver {
+public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver, FollowService.UnfollowObserver, FollowService.FollowObserver {
 
     //View
     public interface View {
@@ -25,7 +25,7 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
         void setNotFollower();
 
         //Unfollow
-        void updateUnfollow();
+        void updateFollow(boolean removed);
         void setFollowButton(boolean setEnabled);
     }
 
@@ -45,7 +45,7 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
         view.displayErrorMessage(FOLLOWERS_COUNT, "Failed to get followers count because of exception: " + ex.getMessage());
     }
 
-    //GetFollowingCountServie
+    //GetFollowingCountService
     @Override
     public void getFollowingCountSucceeded(int count) {
         view.setFollowingCount(count);
@@ -100,7 +100,7 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
     //Unfollow
     @Override
     public void unfollowSucceeded() {
-        view.updateUnfollow();
+        view.updateFollow(true);
         view.setFollowButton(true);
     }
 
@@ -116,12 +116,32 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
         view.setFollowButton(true);
     }
 
+    //Follow
+    @Override
+    public void followSucceeded() {
+    view.updateFollow(false);
+    view.setFollowButton(true);
+    }
+
+    @Override
+    public void followFailed(String message) {
+        view.displayErrorMessage(FOLLOW, "Failed to follow: " + message);
+        view.setFollowButton(true);
+    }
+
+    @Override
+    public void followThrewException(Exception ex) {
+        view.displayErrorMessage(FOLLOW, "Failed to follow because of exception: " + ex.getMessage());
+        view.setFollowButton(true);
+    }
+
     private View view;
     private final String LOGOUT = "logout";
     private final String FOLLOWERS_COUNT = "followersCount";
     private final String FOLLOWING_COUNT = "followingCount";
     private final String IS_FOLLOWER = "isFollower";
     private final String UNFOLLOW = "unfollow";
+    private final String FOLLOW = "follow";
 
     public MainPresenter(View view) {
         this.view = view;
@@ -146,6 +166,10 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     public void unfollow(AuthToken authToken, User selectedUser) {
         new FollowService().unfollow(authToken, selectedUser, this);
+    }
+
+    public void follow(AuthToken authToken, User selectedUser) {
+        new FollowService().follow(authToken, selectedUser, this);
     }
 
 }
