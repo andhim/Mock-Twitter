@@ -1,11 +1,13 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 import edu.byu.cs.tweeter.client.model.service.CountService;
+import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver {
+public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver {
 
     //View
     public interface View {
@@ -17,6 +19,10 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
         void setFollowersCount(int count);
         void setFollowingCount(int count);
+
+        //IsFollower
+        void setFollower();
+        void setNotFollower();
     }
 
     //GetFollowersCountService
@@ -67,10 +73,31 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
         view.displayErrorMessage(LOGOUT,"Failed to logout because of exception: " + ex.getMessage());
     }
 
+    //IsFollower
+    @Override
+    public void isFollowerSucceeded(boolean isFollower) {
+        if (isFollower) {
+            view.setFollower();
+        } else {
+            view.setNotFollower();
+        }
+    }
+
+    @Override
+    public void isFollowerFailed(String message) {
+        view.displayErrorMessage(IS_FOLLOWER, "Failed to determine following relationship: " + message);
+    }
+
+    @Override
+    public void isFollowerThrewException(Exception ex) {
+        view.displayErrorMessage(IS_FOLLOWER, "Failed to determine following relationship because of exception: " + ex.getMessage());
+    }
+
     private View view;
     private final String LOGOUT = "logout";
     private final String FOLLOWERS_COUNT = "followersCount";
     private final String FOLLOWING_COUNT = "followingCount";
+    private final String IS_FOLLOWER = "isFollower";
 
     public MainPresenter(View view) {
         this.view = view;
@@ -87,6 +114,10 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     public void getFollowingCount(AuthToken authToken, User selectedUser) {
         new CountService().getFollowingCount(authToken, selectedUser, this);
+    }
+
+    public void isFollower(AuthToken authToken, User currUser, User selectedUser) {
+        new FollowService().isFollower(authToken, currUser, selectedUser, this);
     }
 
 }
