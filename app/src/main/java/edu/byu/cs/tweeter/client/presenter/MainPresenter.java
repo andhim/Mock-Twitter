@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver {
+public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver, FollowService.UnfollowObserver {
 
     //View
     public interface View {
@@ -23,6 +23,10 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
         //IsFollower
         void setFollower();
         void setNotFollower();
+
+        //Unfollow
+        void updateUnfollow();
+        void setFollowButton(boolean setEnabled);
     }
 
     //GetFollowersCountService
@@ -93,11 +97,31 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
         view.displayErrorMessage(IS_FOLLOWER, "Failed to determine following relationship because of exception: " + ex.getMessage());
     }
 
+    //Unfollow
+    @Override
+    public void unfollowSucceeded() {
+        view.updateUnfollow();
+        view.setFollowButton(true);
+    }
+
+    @Override
+    public void unfollowFailed(String message) {
+        view.displayErrorMessage(UNFOLLOW, "Failed to unfollow: " + message);
+        view.setFollowButton(true);
+    }
+
+    @Override
+    public void unfollowThrewException(Exception ex) {
+        view.displayErrorMessage(UNFOLLOW, "Failed to unfollow because of exception: " + ex.getMessage());
+        view.setFollowButton(true);
+    }
+
     private View view;
     private final String LOGOUT = "logout";
     private final String FOLLOWERS_COUNT = "followersCount";
     private final String FOLLOWING_COUNT = "followingCount";
     private final String IS_FOLLOWER = "isFollower";
+    private final String UNFOLLOW = "unfollow";
 
     public MainPresenter(View view) {
         this.view = view;
@@ -118,6 +142,10 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     public void isFollower(AuthToken authToken, User currUser, User selectedUser) {
         new FollowService().isFollower(authToken, currUser, selectedUser, this);
+    }
+
+    public void unfollow(AuthToken authToken, User selectedUser) {
+        new FollowService().unfollow(authToken, selectedUser, this);
     }
 
 }

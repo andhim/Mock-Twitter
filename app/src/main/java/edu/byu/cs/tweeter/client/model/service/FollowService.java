@@ -14,12 +14,55 @@ import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
+import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService {
+    //Main Activity
+    public interface UnfollowObserver {
+        void unfollowSucceeded(); //TODO
+        void unfollowFailed(String message);
+        void unfollowThrewException(Exception ex);
+    }
+
+    public void unfollow(AuthToken authToken, User selectedUser, UnfollowObserver observer) {
+        UnfollowTask unfollowTask = new UnfollowTask(authToken, selectedUser, new UnfollowHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(unfollowTask);
+    }
+
+    // UnfollowHandler
+
+    private class UnfollowHandler extends Handler {
+        UnfollowObserver observer;
+
+        public UnfollowHandler(UnfollowObserver observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
+            if (success) {
+                observer.unfollowSucceeded();
+            } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
+                observer.unfollowFailed(message);
+            } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);
+                observer.unfollowThrewException(ex);
+            }
+        }
+    }
+
+
+
+
+
+
     //MainActivity
     public interface IsFollowerObserver {
         void isFollowerSucceeded(boolean isFollower);
