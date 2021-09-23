@@ -16,6 +16,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.client.view.main.followers.FollowersFragment;
+import edu.byu.cs.tweeter.client.view.main.story.StoryFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 

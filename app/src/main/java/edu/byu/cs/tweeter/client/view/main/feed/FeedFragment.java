@@ -229,6 +229,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View{
                 }, startIndex, (startIndex + mention.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
+            //TODO: not sure?
             for (String url : status.getUrls()) {
                 int startIndex = status.getPost().indexOf(url);
                 spannableString.setSpan(new URLSpan(url), startIndex, (startIndex + url.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -412,16 +413,15 @@ public class FeedFragment extends Fragment implements FeedPresenter.View{
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-
-                if ((visibleItemCount + firstVisibleItemPosition) >=
-                        totalItemCount && firstVisibleItemPosition >= 0) {
-                    // Run this code later on the UI thread
-                    try {
-                        loadMoreItems(feedRecyclerViewAdapter.isInitial);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
+            if ((visibleItemCount + firstVisibleItemPosition) >=
+                    totalItemCount && firstVisibleItemPosition >= 0) {
+                // Run this code later on the UI thread
+                try {
+                    loadMoreItems(feedRecyclerViewAdapter.isInitial);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
+            }
 
         }
     }
