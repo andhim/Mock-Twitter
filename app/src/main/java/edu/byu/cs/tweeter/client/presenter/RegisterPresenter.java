@@ -15,11 +15,10 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         void clearInfoMessage();
     }
 
-    //TODO: check the methods from RegisterObserver
     @Override
     public void registerSucceeded(User registeredUser) {
         view.navigateToUser(registeredUser);
-        view.clearErrorMessage(); //TODO: check if it is clearInfoMessage();
+        view.clearErrorMessage();
         view.displayInfoMessage("Hello " + registeredUser.getName());
     }
 
@@ -44,12 +43,9 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         view.clearErrorMessage();
         view.clearInfoMessage();
 
-        String message = validateRegistration(firstName, lastName, alias, password, imageBytesBase64); //TODO: and imageBytesBase64?va
+        String message = validateRegistration(firstName, lastName, alias, password, imageBytesBase64);
         if (message == null) {
             view.displayInfoMessage("Registering...");
-            
-
-
             new UserService().register(firstName, lastName, alias, password, imageBytesBase64, this);
         } else {
             view.displayErrorMessage("Register failed: " + message);
@@ -75,8 +71,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         if (password.length() == 0) {
             return "Password cannot be empty.";
         }
-
-        if (imageBytesBase64.length() == 0 ) {
+        if (imageBytesBase64 == null || imageBytesBase64.length() == 0) {
             return "Profile image must be uploaded.";
         }
 

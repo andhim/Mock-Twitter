@@ -181,7 +181,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
             // @mentions and urls clickable
             SpannableString spannableString = new SpannableString(status.getPost());
 
-            //TODO: Need to refactor the whole for loop?
             for (String mention : status.getMentions()) {
                 ClickableSpan span = new ClickableSpan() {
                     @Override
@@ -214,7 +213,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View {
                 spannableString.setSpan(span, startIndex, (startIndex + mention.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
-            //TODO: not sure?
             for (String url : status.getUrls()) {
                 int startIndex = status.getPost().indexOf(url);
                 spannableString.setSpan(new URLSpan(url), startIndex, (startIndex + url.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

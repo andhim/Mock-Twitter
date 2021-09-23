@@ -72,7 +72,7 @@ public class FeedPresenter implements FeedService.GetFeedObserver ,UserService.G
     private static final int PAGE_SIZE = 10;
 
     private View view;
-    private User user; //TODO: what user?
+    private User user; //Feed Owner
     private AuthToken authToken;
 
     private Status lastStatus;

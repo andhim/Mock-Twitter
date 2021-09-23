@@ -75,7 +75,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View{
         isLoading = value;
         if (isLoading) {
             try {
-                feedRecyclerViewAdapter.addLoadingFooter(); //TODO:okay?
+                feedRecyclerViewAdapter.addLoadingFooter(); 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -172,10 +172,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View{
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //TODO: use displayInfoMessage(...)
-                    //TODO: test if you click ona  feed see if the toast is shown
                     displayInfoMessage("You selected '" + userName.getText() + "'.");
-//                    Toast.makeText(getContext(), "You selected '" + userName.getText() + "'.", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -193,8 +190,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View{
 
             // @mentions and urls clickable
             SpannableString spannableString = new SpannableString(status.getPost());
-
-            //TODO: Need to refactor the whole for loop?
+            
             for (String mention : status.getMentions()) {
                 int startIndex = status.getPost().indexOf(mention);
                 spannableString.setSpan(new ClickableSpan() {
@@ -223,8 +219,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.View{
                     }
                 }, startIndex, (startIndex + mention.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
-
-            //TODO: not sure?
+            
             for (String url : status.getUrls()) {
                 int startIndex = status.getPost().indexOf(url);
                 spannableString.setSpan(new URLSpan(url), startIndex, (startIndex + url.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

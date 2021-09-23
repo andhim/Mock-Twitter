@@ -55,7 +55,7 @@ public class UserService {
                 Cache.getInstance().setCurrUser(loggedInUser);
                 Cache.getInstance().setCurrUserAuthToken(authToken);
 
-                observer.loginSucceeded(authToken, loggedInUser); //TODO: We want to let the presenter know that login succeeded
+                observer.loginSucceeded(authToken, loggedInUser);
             } else if (msg.getData().containsKey(LoginTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(LoginTask.MESSAGE_KEY);
                 observer.loginFailed(message);
@@ -68,7 +68,6 @@ public class UserService {
 
     //Main Fragment
     public interface LogoutObserver {
-        //TODO:
         void logoutSucceeded();
         void logoutFailed(String message);
         void logoutThrewException(Exception ex);
@@ -87,7 +86,6 @@ public class UserService {
             this.observer = observer;
         }
 
-        //TODO:
         @Override
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);

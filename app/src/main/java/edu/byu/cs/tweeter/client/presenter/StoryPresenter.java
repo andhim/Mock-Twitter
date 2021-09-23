@@ -71,7 +71,7 @@ public class StoryPresenter implements StoryService.GetStoryObserver, UserServic
     private static final int PAGE_SIZE = 10;
 
     private View view;
-    private User user; //TODO: what user?
+    private User user; // (Story Owner)
     private AuthToken authToken;
 
     private Status lastStatus;

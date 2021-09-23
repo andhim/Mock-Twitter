@@ -9,6 +9,23 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowerPresenter implements FollowService.GetFollowersObserver, UserService.GetUserObserver {
 
+    //GetUserObserver
+    @Override
+    public void getUserSucceeded(User user) {
+        view.displayInfoMessage("Getting user's profile...");
+        view.navigateToUser(user);
+    }
+
+    @Override
+    public void getUserFailed(String message) {
+        view.displayErrorMessage("Failed to get user's profile: " + message);
+    }
+
+    @Override
+    public void getUserThrewException(Exception ex) {
+        view.displayErrorMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+    }
+
     //GetFollowersObserver
     @Override
     public void getFollowersSucceeded(List<User> followers, User lastFollower, boolean hasMorePages) {
@@ -34,22 +51,7 @@ public class FollowerPresenter implements FollowService.GetFollowersObserver, Us
         view.displayErrorMessage("Failed to get followers because of exception: " + ex.getMessage());
     }
 
-    //GetUserObserver
-    @Override
-    public void getUserSucceeded(User user) {
-        view.displayInfoMessage("Getting user's profile...");
-        view.navigateToUser(user);
-    }
 
-    @Override
-    public void getUserFailed(String message) {
-        view.displayErrorMessage("Failed to get user's profile: " + message);
-    }
-
-    @Override
-    public void getUserThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get user's profile because of exception: " + ex.getMessage());
-    }
 
     public interface View {
         void addItems(List<User> followers);

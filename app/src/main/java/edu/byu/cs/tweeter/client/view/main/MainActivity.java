@@ -2,9 +2,6 @@ package edu.byu.cs.tweeter.client.view.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,35 +11,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import edu.byu.cs.client.R;
-import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
-import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
-import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
-import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter;
 import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.client.view.login.StatusDialogFragment;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
-import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
@@ -107,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void displayErrorMessage(String type, String message) {
-        //TODO: if branches => valid for View?
+        //TODO:could be called by different methods defined in View
         if (type == "logout") {
             logOutToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
             logOutToast.show();
@@ -121,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void displayInfoMessage(String type, String message) {
-        //TODO: if branches => valid for View?
+        //TODO:could be called by different methods defined in View
         if (type == "logout") {
             logOutToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
             logOutToast.show();
@@ -143,10 +123,9 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-
     private Toast logOutToast;
     private Toast postingToast;
-    private User selectedUser; //TODO
+    private User selectedUser;
     private TextView followeeCount;
     private TextView followerCount;
     private Button followButton;
@@ -159,9 +138,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TODO: don't user private variable?
-        selectedUser = (User) getIntent().getSerializableExtra(CURRENT_USER_KEY);
-        //TODO: presenter?
+         selectedUser = (User) getIntent().getSerializableExtra(CURRENT_USER_KEY);
+
         if (selectedUser == null) {
             throw new RuntimeException("User not passed to activity");
         }
@@ -204,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
         followButton = findViewById(R.id.followButton);
 
-        //TODO: if branch => View or Presenter?
         if (selectedUser.compareTo(Cache.getInstance().getCurrUser()) == 0) { //NOTE: If they are equal
             followButton.setVisibility(View.GONE);
         } else {
@@ -215,23 +192,15 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: not belong to view?
                 followButton.setEnabled(false);
 
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
                     presenter.unfollow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
-                    //TODO: okay to use displayInfoMessage?
                     displayInfoMessage("UNFOLLOW","Removing " + selectedUser.getName() + "...");
-                    //Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 } else {
                     presenter.follow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
-                    //TODO: okay to use displayInfoMessage?
                     displayInfoMessage("FOLLOW","Adding " + selectedUser.getName() + "...");
-                    //Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show();
                 }
-
-                //TODO: not belong to view?
-//                followButton.setEnabled(true);
             }
         });
     }
@@ -258,20 +227,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     @Override
     public void onStatusPosted(String post) {
         presenter.postStatus(Cache.getInstance().getCurrUserAuthToken(),post, Cache.getInstance().getCurrUser());
-
-
-//        try {
-//            //TODO: PostStatus Task
-////            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
-//
-////            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-////                    newStatus, new PostStatusHandler());
-////            ExecutorService executor = Executors.newSingleThreadExecutor();
-////            executor.execute(statusTask);
-//        } catch (Exception ex) {
-//            Log.e(LOG_TAG, ex.getMessage(), ex);
-//            Toast.makeText(this, "Failed to post the status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-//        }
     }
 
 
@@ -284,24 +239,14 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         //TODO: Can I just use 'newSingleThreadExecutor()' twice instead of using the below?
 //        ExecutorService executor = Executors.newFixedThreadPool(2);
 
-        //TODO: GetFollowersCount Task
         // Get count of most recently selected user's followers.
-//        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
-//                selectedUser, new GetFollowersCountHandler());
-//        executor.execute(followersCountTask);
-
-        //TODO: GetFollowingCount Task
-        // Get count of most recently selected user's followees (who they are following)
-//        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(),
-//                selectedUser, new GetFollowingCountHandler());
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        executor.execute(followingCountTask);
         presenter.getFollowersCount(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
+
+        // Get count of most recently selected user's followees (who they are following)
         presenter.getFollowingCount(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
 
     }
 
-    //TODO: presenter?
     public void updateFollowButton(boolean removed) {
         // If follow relationship was removed.
         if (removed) {
