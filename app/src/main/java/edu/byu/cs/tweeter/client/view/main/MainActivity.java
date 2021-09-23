@@ -50,7 +50,7 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.View {
 
-    private static final String LOG_TAG = "MainActivity";
+
 
     public static final String CURRENT_USER_KEY = "CurrentUser";
 
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         if (type == "logout") {
             logOutToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
             logOutToast.show();
-        } else if (type == "") {
+        } else if (type == "postStatus") {
             postingToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
             postingToast.show();
         } else {
@@ -125,7 +125,8 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         if (type == "logout") {
             logOutToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
             logOutToast.show();
-        } else if (type ==""){
+        } else if (type =="postStatus"){
+            clearPostingMessage();
             postingToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
             postingToast.show();
         } else {
@@ -136,7 +137,10 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void clearPostingMessage() {
-        postingToast.cancel();
+        if (postingToast != null) {
+            postingToast.cancel();
+            postingToast = null;
+        }
     }
 
 
@@ -253,90 +257,28 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void onStatusPosted(String post) {
-        postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
-        postingToast.show();
+        presenter.postStatus(Cache.getInstance().getCurrUserAuthToken(),post, Cache.getInstance().getCurrUser());
 
-        try {
-            //TODO: PostStatus Task
-            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
 
-            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
-                    newStatus, new PostStatusHandler());
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(statusTask);
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
-            Toast.makeText(this, "Failed to post the status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-        }
+//        try {
+//            //TODO: PostStatus Task
+////            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
+//
+////            PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
+////                    newStatus, new PostStatusHandler());
+////            ExecutorService executor = Executors.newSingleThreadExecutor();
+////            executor.execute(statusTask);
+//        } catch (Exception ex) {
+//            Log.e(LOG_TAG, ex.getMessage(), ex);
+//            Toast.makeText(this, "Failed to post the status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+//        }
     }
 
-    //TODO: presenter
-    public String getFormattedDateTime() throws ParseException {
-        SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
 
-        return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
-    }
 
-    //TODO: Presenter
-    public List<String> parseURLs(String post) throws MalformedURLException {
-        List<String> containedUrls = new ArrayList<>();
-        for (String word : post.split("\\s")) {
-            if (word.startsWith("http://") || word.startsWith("https://")) {
 
-                int index = findUrlEndIndex(word);
 
-                word = word.substring(0, index);
 
-                containedUrls.add(word);
-            }
-        }
-
-        return containedUrls;
-    }
-
-    //TODO: Presenter
-    public List<String> parseMentions(String post) {
-        List<String> containedMentions = new ArrayList<>();
-
-        for (String word : post.split("\\s")) {
-            if (word.startsWith("@")) {
-                word = word.replaceAll("[^a-zA-Z0-9]", "");
-                word = "@".concat(word);
-
-                containedMentions.add(word);
-            }
-        }
-
-        return containedMentions;
-    }
-
-    //TODO: Presenter
-    public int findUrlEndIndex(String word) {
-        if (word.contains(".com")) {
-            int index = word.indexOf(".com");
-            index += 4;
-            return index;
-        } else if (word.contains(".org")) {
-            int index = word.indexOf(".org");
-            index += 4;
-            return index;
-        } else if (word.contains(".edu")) {
-            int index = word.indexOf(".edu");
-            index += 4;
-            return index;
-        } else if (word.contains(".net")) {
-            int index = word.indexOf(".net");
-            index += 4;
-            return index;
-        } else if (word.contains(".mil")) {
-            int index = word.indexOf(".mil");
-            index += 4;
-            return index;
-        } else {
-            return word.length();
-        }
-    }
 
     public void updateSelectedUserFollowingAndFollowers() {
         //TODO: Can I just use 'newSingleThreadExecutor()' twice instead of using the below?
@@ -369,28 +311,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             followButton.setText(R.string.following);
             followButton.setBackgroundColor(getResources().getColor(R.color.white));
             followButton.setTextColor(getResources().getColor(R.color.lightGray));
-        }
-    }
-
-
-
-
-    // PostStatusHandler
-
-    private class PostStatusHandler extends Handler {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(PostStatusTask.SUCCESS_KEY);
-            if (success) {
-                postingToast.cancel();
-                Toast.makeText(MainActivity.this, "Successfully Posted!", Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(PostStatusTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(PostStatusTask.MESSAGE_KEY);
-                Toast.makeText(MainActivity.this, "Failed to post status: " + message, Toast.LENGTH_LONG).show();
-            } else if (msg.getData().containsKey(PostStatusTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(PostStatusTask.EXCEPTION_KEY);
-                Toast.makeText(MainActivity.this, "Failed to post status because of exception: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
         }
     }
 

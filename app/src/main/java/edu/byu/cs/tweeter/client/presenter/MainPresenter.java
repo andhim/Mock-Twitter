@@ -1,13 +1,27 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.CountService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Follow;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver, FollowService.UnfollowObserver, FollowService.FollowObserver {
+public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver, FollowService.UnfollowObserver, FollowService.FollowObserver, StatusService.PostStatusObserver {
 
     //View
     public interface View {
@@ -135,13 +149,32 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
         view.setFollowButton(true);
     }
 
+    //PostStatus
+
+    @Override
+    public void postStatusSucceeded() {
+        view.displayInfoMessage(POST_STATUS, "Successfully Posted!");
+    }
+
+    @Override
+    public void postStatusFailed(String message) {
+        view.displayErrorMessage(POST_STATUS, "Failed to post status: " + message);
+    }
+
+    @Override
+    public void postStatusThrewException(Exception ex) {
+        view.displayErrorMessage(POST_STATUS, "Failed to post status because of exception: " + ex.getMessage());
+    }
+
     private View view;
+    private static final String LOG_TAG = "MainActivity";
     private final String LOGOUT = "logout";
     private final String FOLLOWERS_COUNT = "followersCount";
     private final String FOLLOWING_COUNT = "followingCount";
     private final String IS_FOLLOWER = "isFollower";
     private final String UNFOLLOW = "unfollow";
     private final String FOLLOW = "follow";
+    private final String POST_STATUS = "postStatus";
 
     public MainPresenter(View view) {
         this.view = view;
@@ -170,6 +203,82 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     public void follow(AuthToken authToken, User selectedUser) {
         new FollowService().follow(authToken, selectedUser, this);
+    }
+
+    //postStatus
+    public void postStatus(AuthToken authToken, String post, User currUser)  {
+        try {
+            view.displayInfoMessage(POST_STATUS, "Pending Status...");
+            Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
+            new StatusService().postStatus(authToken, newStatus, this);
+        } catch (Exception ex) {
+            Log.e(LOG_TAG, ex.getMessage(), ex);
+            view.displayErrorMessage(POST_STATUS, "Failed to post the status because of exception: " + ex.getMessage());
+        }
+    }
+
+    private String getFormattedDateTime() throws ParseException {
+        SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
+
+        return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
+    }
+
+    private List<String> parseURLs(String post) throws MalformedURLException {
+        List<String> containedUrls = new ArrayList<>();
+        for (String word : post.split("\\s")) {
+            if (word.startsWith("http://") || word.startsWith("https://")) {
+
+                int index = findUrlEndIndex(word);
+
+                word = word.substring(0, index);
+
+                containedUrls.add(word);
+            }
+        }
+
+        return containedUrls;
+    }
+
+    private int findUrlEndIndex(String word) {
+        if (word.contains(".com")) {
+            int index = word.indexOf(".com");
+            index += 4;
+            return index;
+        } else if (word.contains(".org")) {
+            int index = word.indexOf(".org");
+            index += 4;
+            return index;
+        } else if (word.contains(".edu")) {
+            int index = word.indexOf(".edu");
+            index += 4;
+            return index;
+        } else if (word.contains(".net")) {
+            int index = word.indexOf(".net");
+            index += 4;
+            return index;
+        } else if (word.contains(".mil")) {
+            int index = word.indexOf(".mil");
+            index += 4;
+            return index;
+        } else {
+            return word.length();
+        }
+    }
+
+    private List<String> parseMentions(String post) {
+        List<String> containedMentions = new ArrayList<>();
+
+        for (String word : post.split("\\s")) {
+            if (word.startsWith("@")) {
+                word = word.replaceAll("[^a-zA-Z0-9]", "");
+                word = "@".concat(word);
+
+                containedMentions.add(word);
+            }
+        }
+
+        return containedMentions;
     }
 
 }
