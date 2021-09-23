@@ -1,46 +1,40 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import android.widget.Toast;
-
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.FeedService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.client.view.main.following.FollowingFragment;
+import edu.byu.cs.tweeter.client.view.main.feed.FeedFragment;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements FollowService.GetFollowingObserver, UserService.GetUserObserver {
+public class FeedPresenter implements FeedService.GetFeedObserver ,UserService.GetUserObserver {
 
-    //GetFollowingObserver
+    //GetFeedObserver
     @Override
-    public void getFollowingSucceeded(List<User> followees, User lastFollowee, boolean hasMorePages) {
-        this.lastFollowee = lastFollowee;
+    public void getFeedSucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages) {
+        this.lastStatus = lastStatus;
         this.hasMorePages = hasMorePages;
         this.isLoading = false;
 
-        view.setLoading(isLoading);
-        view.addItems(followees);
+        view.setLoading(false);
+        view.addItems(statuses);
     }
 
     @Override
-    public void getFollowingFailed(String message) {
-        view.displayErrorMessage("Failed to get following: " + message);
-        this.isLoading = false;
+    public void getFeedFailed(String message) {
 
-        view.setLoading(isLoading);
     }
 
     @Override
-    public void getFollowingThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get following because of exception: " + ex.getMessage());
-        this.isLoading = false;
+    public void getFeedThrewException(Exception ex) {
 
-        view.setLoading(isLoading);
     }
 
     //GetUserObserver
@@ -48,6 +42,7 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
     public void getUserSucceeded(User user) {
         view.displayInfoMessage("Getting user's profile...");
         view.navigateToUser(user);
+
     }
 
     @Override
@@ -60,52 +55,53 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
         view.displayErrorMessage("Failed to get user's profile because of exception: " + ex.getMessage());
     }
 
-    //View Interface
+    //View
     public interface View {
+        void addItems(List<Status> statuses);
 
-        void addItems(List<User> followees);
-        void navigateToUser(User user);
+        void displayInfoMessage(String message);
 
         void displayErrorMessage(String message);
-        void displayInfoMessage(String message);
+
+        void navigateToUser(User user);
 
         void setLoading(boolean value);
     }
 
-    //FollowingPresenter
+    //FeedPresenter
     private static final int PAGE_SIZE = 10;
 
     private View view;
-    private User targetUser;
+    private User user; //TODO: what user?
     private AuthToken authToken;
 
-    private User lastFollowee;
+    private Status lastStatus;
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public FollowingPresenter(View view, AuthToken authToken, User targetUser) {
+    public FeedPresenter(View view, User user, AuthToken authToken) {
         this.view = view;
-        this.targetUser = targetUser;
+        this.user = user;
         this.authToken = authToken;
+    }
+
+    public void gotoUser(String alias) {
+        new UserService().getUser(authToken, alias, this);
     }
 
     public void loadMoreItems(boolean isInitial) {
         if (isInitial) {
-            if (!isLoading) {
+            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FollowService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
+                new FeedService().getFeed(authToken, user, PAGE_SIZE, lastStatus, this);
             }
         } else {
             if (!isLoading && hasMorePages) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FollowService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
+                new FeedService().getFeed(authToken, user, PAGE_SIZE, lastStatus, this);
             }
         }
-    }
-
-    public void gotoUser(String alias) {
-        new UserService().getUser(authToken, alias, this);
     }
 }

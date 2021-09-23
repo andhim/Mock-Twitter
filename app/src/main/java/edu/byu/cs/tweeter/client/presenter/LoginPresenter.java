@@ -6,7 +6,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter implements UserService.LoginObserver {
 
-    public interface View { //TODO: Every presenter has a view interface
+    public interface View {
 
         void navigateToUser(User user);
 

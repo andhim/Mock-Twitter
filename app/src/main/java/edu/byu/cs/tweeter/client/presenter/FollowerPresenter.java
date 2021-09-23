@@ -83,7 +83,6 @@ public class FollowerPresenter implements FollowService.GetFollowersObserver, Us
     }
 
     public void gotoUser(String alias) {
-        view.displayInfoMessage("Getting user's profile...");
         new UserService().getUser(authToken, alias, this);
     }
 
