@@ -27,12 +27,12 @@ public class LoginTask extends AuthenticateTask {
 
     @Override
     public boolean runTask() throws IOException {
-            this.user = getFakeData().getFirstUser();
-            this.authToken = getFakeData().getAuthToken();
+        this.user = getFakeData().getFirstUser();
+        this.authToken = getFakeData().getAuthToken();
 
-            BackgroundTaskUtils.loadImage(user);
+        BackgroundTaskUtils.loadImage(user);
 
-            return true;
+        return true;
     }
 
 }

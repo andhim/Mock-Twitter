@@ -74,7 +74,7 @@ public abstract class BackgroundTask implements Runnable {
 
     protected abstract boolean runTask() throws IOException;
 
-    //TODO: this is not abstract because some method won't need to return anything
+    //NOTE: this is not abstract because some method won't need to return anything
     protected void loadSuccessBundle(Bundle msgBundle) {
         // By default, do nothing
         return;
