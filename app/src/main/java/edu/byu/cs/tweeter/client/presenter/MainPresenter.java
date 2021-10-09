@@ -12,21 +12,21 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.CountService;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.LogoutService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements UserService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver, FollowService.UnfollowObserver, FollowService.FollowObserver, StatusService.PostStatusObserver {
+public class MainPresenter implements LogoutService.LogoutObserver, CountService.GetFollowersCountObserver, CountService.GetFollowingCountObserver, FollowService.IsFollowerObserver, FollowService.UnfollowObserver, FollowService.FollowObserver, StatusService.PostStatusObserver {
 
     //View
     public interface View {
         void logoutUser();
-        void displayErrorMessage(String type, String message);
+        void displayErrorMessage(String message);
 
-        void displayInfoMessage(String type, String message);
-        void clearPostingMessage();
+        void displayInfoMessage(String message);
 
         void setFollowersCount(int count);
         void setFollowingCount(int count);
@@ -48,12 +48,12 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     @Override
     public void getFollowersCountFailed(String message) {
-        view.displayErrorMessage(FOLLOWERS_COUNT, "Failed to get followers count: " + message);
+        view.displayErrorMessage("Failed to get followers count: " + message);
     }
 
     @Override
     public void getFollowersCountThrewException(Exception ex) {
-        view.displayErrorMessage(FOLLOWERS_COUNT, "Failed to get followers count because of exception: " + ex.getMessage());
+        view.displayErrorMessage("Failed to get followers count because of exception: " + ex.getMessage());
     }
 
     //GetFollowingCountService
@@ -64,12 +64,12 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     @Override
     public void getFollowingCountFailed(String message) {
-        view.displayErrorMessage(FOLLOWING_COUNT, "Failed to get following count: " + message);
+        view.displayErrorMessage("Failed to get following count: " + message);
     }
 
     @Override
     public void getFollowingCountThrewException(Exception ex) {
-        view.displayErrorMessage(FOLLOWING_COUNT, "Failed to get following count because of exception: " + ex.getMessage());
+        view.displayErrorMessage("Failed to get following count because of exception: " + ex.getMessage());
     }
 
     //Logout
@@ -79,13 +79,8 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
     }
 
     @Override
-    public void logoutFailed(String message) {
-        view.displayErrorMessage(LOGOUT, "Failed to logout: " + message);
-    }
-
-    @Override
-    public void logoutThrewException(Exception ex) {
-        view.displayErrorMessage(LOGOUT,"Failed to logout because of exception: " + ex.getMessage());
+    public void handleFailed(String message) {
+        view.displayErrorMessage(message);
     }
 
     //IsFollower
@@ -100,12 +95,12 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     @Override
     public void isFollowerFailed(String message) {
-        view.displayErrorMessage(IS_FOLLOWER, "Failed to determine following relationship: " + message);
+        view.displayErrorMessage("Failed to determine following relationship: " + message);
     }
 
     @Override
     public void isFollowerThrewException(Exception ex) {
-        view.displayErrorMessage(IS_FOLLOWER, "Failed to determine following relationship because of exception: " + ex.getMessage());
+        view.displayErrorMessage("Failed to determine following relationship because of exception: " + ex.getMessage());
     }
 
     //Unfollow
@@ -117,13 +112,13 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     @Override
     public void unfollowFailed(String message) {
-        view.displayErrorMessage(UNFOLLOW, "Failed to unfollow: " + message);
+        view.displayErrorMessage("Failed to unfollow: " + message);
         view.setFollowButton(true);
     }
 
     @Override
     public void unfollowThrewException(Exception ex) {
-        view.displayErrorMessage(UNFOLLOW, "Failed to unfollow because of exception: " + ex.getMessage());
+        view.displayErrorMessage("Failed to unfollow because of exception: " + ex.getMessage());
         view.setFollowButton(true);
     }
 
@@ -136,13 +131,13 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     @Override
     public void followFailed(String message) {
-        view.displayErrorMessage(FOLLOW, "Failed to follow: " + message);
+        view.displayErrorMessage("Failed to follow: " + message);
         view.setFollowButton(true);
     }
 
     @Override
     public void followThrewException(Exception ex) {
-        view.displayErrorMessage(FOLLOW, "Failed to follow because of exception: " + ex.getMessage());
+        view.displayErrorMessage("Failed to follow because of exception: " + ex.getMessage());
         view.setFollowButton(true);
     }
 
@@ -150,36 +145,29 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
 
     @Override
     public void postStatusSucceeded() {
-        view.displayInfoMessage(POST_STATUS, "Successfully Posted!");
+        view.displayInfoMessage("Successfully Posted!");
     }
 
     @Override
     public void postStatusFailed(String message) {
-        view.displayErrorMessage(POST_STATUS, "Failed to post status: " + message);
+        view.displayErrorMessage("Failed to post status: " + message);
     }
 
     @Override
     public void postStatusThrewException(Exception ex) {
-        view.displayErrorMessage(POST_STATUS, "Failed to post status because of exception: " + ex.getMessage());
+        view.displayErrorMessage("Failed to post status because of exception: " + ex.getMessage());
     }
 
     private View view;
     private static final String LOG_TAG = "MainActivity";
-    private final String LOGOUT = "logout";
-    private final String FOLLOWERS_COUNT = "followersCount";
-    private final String FOLLOWING_COUNT = "followingCount";
-    private final String IS_FOLLOWER = "isFollower";
-    private final String UNFOLLOW = "unfollow";
-    private final String FOLLOW = "follow";
-    private final String POST_STATUS = "postStatus";
 
     public MainPresenter(View view) {
         this.view = view;
     }
 
     public void logout(AuthToken authToken) {
-        view.displayInfoMessage(LOGOUT, "Logging Out...");
-        new UserService().logout(authToken, this);
+        view.displayInfoMessage("Logging Out...");
+        new LogoutService().logout(authToken, this);
     }
 
     public void getFollowersCount(AuthToken authToken, User selectedUser) {
@@ -205,12 +193,12 @@ public class MainPresenter implements UserService.LogoutObserver, CountService.G
     //postStatus
     public void postStatus(AuthToken authToken, String post, User currUser)  {
         try {
-            view.displayInfoMessage(POST_STATUS, "Pending Status...");
+            view.displayInfoMessage("Pending Status...");
             Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
             new StatusService().postStatus(authToken, newStatus, this);
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
-            view.displayErrorMessage(POST_STATUS, "Failed to post the status because of exception: " + ex.getMessage());
+            view.displayErrorMessage("Failed to post the status because of exception: " + ex.getMessage());
         }
     }
 
