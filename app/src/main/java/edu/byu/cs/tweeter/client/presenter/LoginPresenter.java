@@ -1,10 +1,11 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import edu.byu.cs.tweeter.client.model.service.LoginService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class LoginPresenter implements UserService.LoginObserver {
+public class LoginPresenter implements LoginService.LoginObserver {
 
     public interface View {
 
@@ -25,13 +26,8 @@ public class LoginPresenter implements UserService.LoginObserver {
     }
 
     @Override
-    public void loginFailed(String message) {
-        view.displayErrorMessage("Login failed: " + message);
-    }
-
-    @Override
-    public void loginThrewException(Exception ex) {
-        view.displayErrorMessage("Login failed: " + ex.getMessage());
+    public void handleFailed(String message) {
+        view.displayErrorMessage(message);
     }
 
     private View view;
@@ -48,7 +44,7 @@ public class LoginPresenter implements UserService.LoginObserver {
         String message = validateLogin(alias, password);
         if (message == null) {
             view.displayInfoMessage("Logging In...");
-            new UserService().login(alias,password,this);
+            new LoginService().login(alias,password,this);
         } else {
             view.displayErrorMessage("Login failed: " + message);
         }

@@ -18,53 +18,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService {
 
-    //Login Fragment
-    public interface LoginObserver {
-        void loginSucceeded(AuthToken authToken, User user);
-        void loginFailed(String message);
-        void loginThrewException(Exception ex);
-    }
 
-    public void login(String alias, String password, LoginObserver observer) {
-
-        //Run a LoginTask to login the user
-        LoginTask loginTask = new LoginTask(alias, password, new LoginHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(loginTask);
-    }
-
-    /**
-     * Message handler (i.e., observer) for LoginTask
-     */
-    private class LoginHandler extends Handler {
-
-        private LoginObserver observer;
-
-        public LoginHandler(LoginObserver observer) {
-            this.observer = observer;
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(LoginTask.SUCCESS_KEY);
-            if (success) {
-                User loggedInUser = (User) msg.getData().getSerializable(LoginTask.USER_KEY);
-                AuthToken authToken = (AuthToken) msg.getData().getSerializable(LoginTask.AUTH_TOKEN_KEY);
-
-                // Cache user session information
-                Cache.getInstance().setCurrUser(loggedInUser);
-                Cache.getInstance().setCurrUserAuthToken(authToken);
-
-                observer.loginSucceeded(authToken, loggedInUser);
-            } else if (msg.getData().containsKey(LoginTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(LoginTask.MESSAGE_KEY);
-                observer.loginFailed(message);
-            } else if (msg.getData().containsKey(LoginTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(LoginTask.EXCEPTION_KEY);
-                observer.loginThrewException(ex);
-            }
-        }
-    }
 
     //Main Fragment
     public interface LogoutObserver {
