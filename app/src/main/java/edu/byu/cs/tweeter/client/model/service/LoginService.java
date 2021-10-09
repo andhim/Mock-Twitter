@@ -29,7 +29,7 @@ public class LoginService {
      */
     private class LoginHandler extends BackgroundTaskHandler {
 
-        final private String PREFIX_MESSAGE = "Login failed: ";
+        private final String PREFIX_MESSAGE = "Login failed: ";
 
         public LoginHandler(LoginObserver observer) {
             super(observer);

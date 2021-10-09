@@ -3,11 +3,12 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.GetUserService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements FollowService.GetFollowingObserver, UserService.GetUserObserver {
+public class FollowingPresenter implements FollowService.GetFollowingObserver, GetUserService.GetUserObserver {
 
     //GetFollowingObserver
     @Override
@@ -44,13 +45,8 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
     }
 
     @Override
-    public void getUserFailed(String message) {
-        view.displayErrorMessage("Failed to get user's profile: " + message);
-    }
-
-    @Override
-    public void getUserThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+    public void handleFailed(String message) {
+        view.displayErrorMessage(message);
     }
 
     //View Interface
@@ -99,6 +95,6 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, U
     }
 
     public void gotoUser(String alias) {
-        new UserService().getUser(authToken, alias, this);
+        new GetUserService().getUser(authToken, alias, this);
     }
 }

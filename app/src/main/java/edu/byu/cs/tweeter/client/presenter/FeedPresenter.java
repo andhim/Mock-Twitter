@@ -3,12 +3,13 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FeedService;
+import edu.byu.cs.tweeter.client.model.service.GetUserService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FeedPresenter implements FeedService.GetFeedObserver ,UserService.GetUserObserver {
+public class FeedPresenter implements FeedService.GetFeedObserver , GetUserService.GetUserObserver {
 
     //GetFeedObserver
     @Override
@@ -46,13 +47,8 @@ public class FeedPresenter implements FeedService.GetFeedObserver ,UserService.G
     }
 
     @Override
-    public void getUserFailed(String message) {
+    public void handleFailed(String message) {
         view.displayErrorMessage("Failed to get user's profile: " + message);
-    }
-
-    @Override
-    public void getUserThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get user's profile because of exception: " + ex.getMessage());
     }
 
     //View
@@ -86,7 +82,7 @@ public class FeedPresenter implements FeedService.GetFeedObserver ,UserService.G
     }
 
     public void gotoUser(String alias) {
-        new UserService().getUser(authToken, alias, this);
+        new GetUserService().getUser(authToken, alias, this);
     }
 
     public void loadMoreItems(boolean isInitial) {
