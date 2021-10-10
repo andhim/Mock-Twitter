@@ -3,12 +3,12 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.GetFollowersService;
 import edu.byu.cs.tweeter.client.model.service.GetUserService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowerPresenter implements FollowService.GetFollowersObserver, GetUserService.GetUserObserver {
+public class FollowerPresenter implements GetFollowersService.GetFollowersObserver, GetUserService.GetUserObserver {
 
     //GetUserObserver
     @Override
@@ -34,20 +34,11 @@ public class FollowerPresenter implements FollowService.GetFollowersObserver, Ge
     }
 
     @Override
-    public void getFollowersFailed(String message) {
+    public void handleFailedWithOperations(String message) {
         this.isLoading = false;
         view.setLoading(isLoading);
-        view.displayErrorMessage("Failed to get followers: " + message);
+        view.displayErrorMessage(message);
     }
-
-    @Override
-    public void getFollowersThrewException(Exception ex) {
-        this.isLoading = false;
-        view.setLoading(isLoading);
-        view.displayErrorMessage("Failed to get followers because of exception: " + ex.getMessage());
-    }
-
-
 
     public interface View {
         void addItems(List<User> followers);
@@ -96,13 +87,13 @@ public class FollowerPresenter implements FollowService.GetFollowersObserver, Ge
             if (!isLoading) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FollowService().getFollowers(authToken, targetUser, PAGE_SIZE, lastFollower, this);
+                new GetFollowersService().getFollowers(authToken, targetUser, PAGE_SIZE, lastFollower, this);
             }
         } else {
             if (!isLoading && hasMorePages) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FollowService().getFollowers(authToken, targetUser, PAGE_SIZE, lastFollower, this);
+                new GetFollowersService().getFollowers(authToken, targetUser, PAGE_SIZE, lastFollower, this);
             }
         }
     }

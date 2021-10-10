@@ -2,14 +2,13 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.FeedService;
+import edu.byu.cs.tweeter.client.model.service.GetFeedService;
 import edu.byu.cs.tweeter.client.model.service.GetUserService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FeedPresenter implements FeedService.GetFeedObserver , GetUserService.GetUserObserver {
+public class FeedPresenter implements GetFeedService.GetFeedObserver, GetUserService.GetUserObserver {
 
     //GetFeedObserver
     @Override
@@ -22,20 +21,13 @@ public class FeedPresenter implements FeedService.GetFeedObserver , GetUserServi
         view.addItems(statuses);
     }
 
+    //TODO
     @Override
-    public void getFeedFailed(String message) {
+    public void handleFailedWithOperations(String message) {
         this.isLoading = false;
         view.setLoading(isLoading);
 
-        view.displayErrorMessage("Failed to get feed: " + message);
-    }
-
-    @Override
-    public void getFeedThrewException(Exception ex) {
-        this.isLoading = false;
-        view.setLoading(isLoading);
-
-        view.displayErrorMessage("Failed to get feed because of exception: " + ex.getMessage());
+        view.displayErrorMessage(message);
     }
 
     //GetUserObserver
@@ -90,13 +82,13 @@ public class FeedPresenter implements FeedService.GetFeedObserver , GetUserServi
             if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FeedService().getFeed(authToken, user, PAGE_SIZE, lastStatus, this);
+                new GetFeedService().getFeed(authToken, user, PAGE_SIZE, lastStatus, this);
             }
         } else {
             if (!isLoading && hasMorePages) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FeedService().getFeed(authToken, user, PAGE_SIZE, lastStatus, this);
+                new GetFeedService().getFeed(authToken, user, PAGE_SIZE, lastStatus, this);
             }
         }
     }

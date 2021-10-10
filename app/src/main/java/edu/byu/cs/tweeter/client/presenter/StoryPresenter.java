@@ -3,13 +3,12 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.GetUserService;
-import edu.byu.cs.tweeter.client.model.service.StoryService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.GetStoryService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class StoryPresenter implements StoryService.GetStoryObserver, GetUserService.GetUserObserver {
+public class StoryPresenter implements GetStoryService.GetStoryObserver, GetUserService.GetUserObserver {
 
     //GetStoryObserver
     @Override
@@ -23,19 +22,11 @@ public class StoryPresenter implements StoryService.GetStoryObserver, GetUserSer
     }
 
     @Override
-    public void getStoryFailed(String message) {
+    public void handleFailedWithOperations(String message) { //TODO
         this.isLoading = false;
         view.setLoading(isLoading);
 
         view.displayErrorMessage("Failed to get story: " + message);
-    }
-
-    @Override
-    public void getStoryThrewException(Exception ex) {
-        this.isLoading = false;
-        view.setLoading(isLoading);
-
-        view.displayErrorMessage("Failed to get story because of exception: " + ex.getMessage());
     }
 
     //GetUserObserver
@@ -89,13 +80,13 @@ public class StoryPresenter implements StoryService.GetStoryObserver, GetUserSer
             if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
                 isLoading = true;
                 view.setLoading(isLoading);
-                new StoryService().getStory(authToken, user, PAGE_SIZE, lastStatus, this);
+                new GetStoryService().getStory(authToken, user, PAGE_SIZE, lastStatus, this);
             }
         } else {
             if (!isLoading && hasMorePages) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new StoryService().getStory(authToken, user, PAGE_SIZE, lastStatus, this);
+                new GetStoryService().getStory(authToken, user, PAGE_SIZE, lastStatus, this);
             }
         }
     }

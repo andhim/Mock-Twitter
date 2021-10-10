@@ -1,7 +1,6 @@
 package edu.byu.cs.tweeter.client.presenter;
 
 import edu.byu.cs.tweeter.client.model.service.LoginService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -29,6 +28,7 @@ public class LoginPresenter implements LoginService.LoginObserver {
     public void handleFailed(String message) {
         view.displayErrorMessage(message);
     }
+
 
     private View view;
 

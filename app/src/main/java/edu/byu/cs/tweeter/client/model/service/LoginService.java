@@ -28,7 +28,6 @@ public class LoginService {
      * Message handler (i.e., observer) for LoginTask
      */
     private class LoginHandler extends BackgroundTaskHandler {
-
         private final String PREFIX_MESSAGE = "Login failed: ";
 
         public LoginHandler(LoginObserver observer) {

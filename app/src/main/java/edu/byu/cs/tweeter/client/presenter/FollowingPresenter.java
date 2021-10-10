@@ -3,12 +3,13 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.GetFollowersService;
+import edu.byu.cs.tweeter.client.model.service.GetFollowingService;
 import edu.byu.cs.tweeter.client.model.service.GetUserService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter implements FollowService.GetFollowingObserver, GetUserService.GetUserObserver {
+public class FollowingPresenter implements GetFollowingService.GetFollowingObserver, GetUserService.GetUserObserver {
 
     //GetFollowingObserver
     @Override
@@ -22,16 +23,8 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, G
     }
 
     @Override
-    public void getFollowingFailed(String message) {
-        view.displayErrorMessage("Failed to get following: " + message);
-        this.isLoading = false;
-
-        view.setLoading(isLoading);
-    }
-
-    @Override
-    public void getFollowingThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get following because of exception: " + ex.getMessage());
+    public void handleFailedWithOperations(String message) {
+        view.displayErrorMessage(message);
         this.isLoading = false;
 
         view.setLoading(isLoading);
@@ -83,13 +76,13 @@ public class FollowingPresenter implements FollowService.GetFollowingObserver, G
             if (!isLoading) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FollowService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
+                new GetFollowingService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
             }
         } else {
             if (!isLoading && hasMorePages) {
                 isLoading = true;
                 view.setLoading(isLoading);
-                new FollowService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
+                new GetFollowingService().getFollowing(authToken, targetUser, PAGE_SIZE, lastFollowee, this);
             }
         }
     }

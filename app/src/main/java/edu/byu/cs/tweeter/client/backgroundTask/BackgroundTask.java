@@ -79,8 +79,4 @@ public abstract class BackgroundTask implements Runnable {
         // By default, do nothing
         return;
     }
-
-
-    //TODO: All of them would override 'runTask()'
-    //TODO: some of them would override "loadSuccessBundle(...);
 }
