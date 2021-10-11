@@ -28,7 +28,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 /**
  * The main activity for the application. Contains tabs for feed, story, following, and followers.
  */
-public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.View {
+public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.MainView {
 
 
 
@@ -86,45 +86,24 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
 
     @Override
-    public void displayErrorMessage(String type, String message) {
-        //TODO:could be called by different methods defined in View
-        if (type == "logout") {
-            logOutToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
-            logOutToast.show();
-        } else if (type == "postStatus") {
-            postingToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
-            postingToast.show();
-        } else {
-            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+    public void displayErrorMessage(String message) {
+        if (toastMessage != null) {
+            toastMessage.cancel();
         }
+        toastMessage = Toast.makeText(MainActivity.this,message, Toast.LENGTH_LONG);
+        toastMessage.show();
     }
 
     @Override
-    public void displayInfoMessage(String type, String message) {
-        //TODO:could be called by different methods defined in View
-        if (type == "logout") {
-            logOutToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
-            logOutToast.show();
-        } else if (type =="postStatus"){
-            clearPostingMessage();
-            postingToast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
-            postingToast.show();
-        } else {
-            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+    public void displayInfoMessage(String message) {
+        if (toastMessage != null) {
+            toastMessage.cancel();
         }
-
+        toastMessage = Toast.makeText(MainActivity.this,message, Toast.LENGTH_LONG);
+        toastMessage.show();
     }
 
-    @Override
-    public void clearPostingMessage() {
-        if (postingToast != null) {
-            postingToast.cancel();
-            postingToast = null;
-        }
-    }
-
-    private Toast logOutToast;
-    private Toast postingToast;
+    private Toast toastMessage;
     private User selectedUser;
     private TextView followeeCount;
     private TextView followerCount;
@@ -196,10 +175,10 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
                     presenter.unfollow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
-                    displayInfoMessage("UNFOLLOW","Removing " + selectedUser.getName() + "...");
+                    displayInfoMessage("Removing " + selectedUser.getName() + "...");
                 } else {
                     presenter.follow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
-                    displayInfoMessage("FOLLOW","Adding " + selectedUser.getName() + "...");
+                    displayInfoMessage("Adding " + selectedUser.getName() + "...");
                 }
             }
         });
@@ -236,9 +215,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
 
     public void updateSelectedUserFollowingAndFollowers() {
-        //TODO: Can I just use 'newSingleThreadExecutor()' twice instead of using the below?
-//        ExecutorService executor = Executors.newFixedThreadPool(2);
-
         // Get count of most recently selected user's followers.
         presenter.getFollowersCount(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
 

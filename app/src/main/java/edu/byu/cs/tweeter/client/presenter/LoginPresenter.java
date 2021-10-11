@@ -1,56 +1,39 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.LoginService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class LoginPresenter implements UserService.LoginObserver {
-
-    public interface View {
-
-        void navigateToUser(User user);
-
-        void displayErrorMessage(String message);
-        void clearErrorMessage();
-
-        void displayInfoMessage(String message);
-        void clearInfoMessage();
-    }
+public class LoginPresenter extends AuthenticationPresenter implements LoginService.LoginObserver {
 
     @Override
     public void loginSucceeded(AuthToken authToken, User user) {
-        view.navigateToUser(user);
-        view.clearErrorMessage();
-        view.displayInfoMessage("Hello " + user.getName());
+        ((LoginView) view).navigateToUser(user);
+        ((LoginView) view).clearErrorMessage();
+        ((LoginView) view).displayInfoMessage("Hello " + user.getName());
     }
 
     @Override
-    public void loginFailed(String message) {
-        view.displayErrorMessage("Login failed: " + message);
+    public void handleFailed(String message) {
+        ((LoginView) view).displayErrorMessage(message);
     }
 
-    @Override
-    public void loginThrewException(Exception ex) {
-        view.displayErrorMessage("Login failed: " + ex.getMessage());
-    }
 
-    private View view;
-
-    public LoginPresenter(View view) {
-        this.view = view;
+    public LoginPresenter(LoginView view) {
+        super(view);
     }
 
     public void login(String alias, String password) {
 
-        view.clearErrorMessage();
-        view.clearInfoMessage();
+        ((LoginView) view).clearErrorMessage();
+        ((LoginView) view).clearInfoMessage();
 
         String message = validateLogin(alias, password);
         if (message == null) {
-            view.displayInfoMessage("Logging In...");
-            new UserService().login(alias,password,this);
+            ((LoginView) view).displayInfoMessage("Logging In...");
+            new LoginService().login(alias,password,this);
         } else {
-            view.displayErrorMessage("Login failed: " + message);
+            ((LoginView) view).displayErrorMessage("Login failed: " + message);
         }
     }
 
@@ -64,7 +47,9 @@ public class LoginPresenter implements UserService.LoginObserver {
         if (password.length() == 0) {
             return "Password cannot be empty.";
         }
-
         return null;
+    }
+
+    public interface LoginView extends AuthenticationPresenter.AuthenticationView {
     }
 }

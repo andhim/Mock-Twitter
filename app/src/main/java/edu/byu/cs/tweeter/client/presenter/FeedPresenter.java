@@ -1,107 +1,58 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.graphics.pdf.PdfDocument;
+
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.FeedService;
-import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.GetFeedService;
+import edu.byu.cs.tweeter.client.model.service.GetPagedService;
+import edu.byu.cs.tweeter.client.model.service.GetUserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FeedPresenter implements FeedService.GetFeedObserver ,UserService.GetUserObserver {
+public class FeedPresenter extends PagedPresenter<Status> implements GetFeedService.GetFeedObserver, GetUserService.GetUserObserver {
+    //FeedPresenter
+    public FeedPresenter(FeedView view, User user, AuthToken authToken) {
+        super(view, user, authToken);
+    }
 
     //GetFeedObserver
     @Override
-    public void getFeedSucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages) {
-        this.lastStatus = lastStatus;
+    public void getItemSucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages) {
+        this.lastItem = lastStatus;
         this.hasMorePages = hasMorePages;
         this.isLoading = false;
 
-        view.setLoading(false);
-        view.addItems(statuses);
+        ((FeedView) this.view).setLoading(false);
+        ((FeedView) this.view).addItems(statuses);
     }
 
     @Override
-    public void getFeedFailed(String message) {
+    public void handleFailedWithOperations(String message) {
         this.isLoading = false;
-        view.setLoading(isLoading);
-
-        view.displayErrorMessage("Failed to get feed: " + message);
-    }
-
-    @Override
-    public void getFeedThrewException(Exception ex) {
-        this.isLoading = false;
-        view.setLoading(isLoading);
-
-        view.displayErrorMessage("Failed to get feed because of exception: " + ex.getMessage());
+        ((FeedView) this.view).setLoading(isLoading);
+        ((FeedView) this.view).displayErrorMessage(message);
     }
 
     //GetUserObserver
     @Override
     public void getUserSucceeded(User user) {
-        view.displayInfoMessage("Getting user's profile...");
-        view.navigateToUser(user);
-
+        ((FeedView) this.view).displayInfoMessage("Getting user's profile...");
+        ((FeedView) this.view).navigateToUser(user);
     }
 
     @Override
-    public void getUserFailed(String message) {
-        view.displayErrorMessage("Failed to get user's profile: " + message);
+    public void handleFailed(String message) {
+        ((FeedView) this.view).displayErrorMessage("Failed to get user's profile: " + message);
     }
 
     @Override
-    public void getUserThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to get user's profile because of exception: " + ex.getMessage());
+    public void getItems(AuthToken authToken, User user, int limit, Status lastStatus, GetPagedService.GetItemObserver observer) {
+        new GetFeedService().getFeed(authToken, user, limit, lastItem, this);
     }
 
     //View
-    public interface View {
-        void addItems(List<Status> statuses);
-
-        void displayInfoMessage(String message);
-
-        void displayErrorMessage(String message);
-
-        void navigateToUser(User user);
-
-        void setLoading(boolean value);
-    }
-
-    //FeedPresenter
-    private static final int PAGE_SIZE = 10;
-
-    private View view;
-    private User user; //Feed Owner
-    private AuthToken authToken;
-
-    private Status lastStatus;
-    private boolean hasMorePages;
-    private boolean isLoading = false;
-
-    public FeedPresenter(View view, User user, AuthToken authToken) {
-        this.view = view;
-        this.user = user;
-        this.authToken = authToken;
-    }
-
-    public void gotoUser(String alias) {
-        new UserService().getUser(authToken, alias, this);
-    }
-
-    public void loadMoreItems(boolean isInitial) {
-        if (isInitial) {
-            if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
-                isLoading = true;
-                view.setLoading(isLoading);
-                new FeedService().getFeed(authToken, user, PAGE_SIZE, lastStatus, this);
-            }
-        } else {
-            if (!isLoading && hasMorePages) {
-                isLoading = true;
-                view.setLoading(isLoading);
-                new FeedService().getFeed(authToken, user, PAGE_SIZE, lastStatus, this);
-            }
-        }
+    public interface FeedView extends PagedPresenter.PagedView<Status> {
     }
 }

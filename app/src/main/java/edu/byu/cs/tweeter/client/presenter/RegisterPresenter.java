@@ -1,52 +1,22 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.model.service.RegisterService;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter implements UserService.RegisterObserver {
+public class RegisterPresenter extends AuthenticationPresenter implements RegisterService.RegisterObserver {
 
-    public interface View {
-        void navigateToUser(User user);
-
-        void displayErrorMessage(String message);
-        void clearErrorMessage();
-
-        void displayInfoMessage(String message);
-        void clearInfoMessage();
-    }
-
-    @Override
-    public void registerSucceeded(User registeredUser) {
-        view.navigateToUser(registeredUser);
-        view.clearErrorMessage();
-        view.displayInfoMessage("Hello " + registeredUser.getName());
-    }
-
-    @Override
-    public void registerFailed(String message) {
-        view.displayErrorMessage("Failed to register: " + message);
-    }
-
-    @Override
-    public void registerThrewException(Exception ex) {
-        view.displayErrorMessage("Failed to register because of exception: " + ex.getMessage());
-    }
-
-    private View view;
-
-    public RegisterPresenter(View view) {
-        this.view = view;
+    public RegisterPresenter(RegisterView view) {
+        super(view);
     }
 
     public void register(String firstName, String lastName, String alias, String password, String imageBytesBase64) {
-
-        view.clearErrorMessage();
-        view.clearInfoMessage();
+        ((RegisterView) view).clearErrorMessage();
+        ((RegisterView) view).clearInfoMessage();
 
         String message = validateRegistration(firstName, lastName, alias, password, imageBytesBase64);
         if (message == null) {
             view.displayInfoMessage("Registering...");
-            new UserService().register(firstName, lastName, alias, password, imageBytesBase64, this);
+            new RegisterService().register(firstName, lastName, alias, password, imageBytesBase64, this);
         } else {
             view.displayErrorMessage("Register failed: " + message);
         }
@@ -78,5 +48,18 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         return null;
     }
 
+    @Override
+    public void registerSucceeded(User registeredUser) {
+        ((RegisterView) view).navigateToUser(registeredUser);
+        ((RegisterView) view).clearErrorMessage();
+        ((RegisterView) view).displayInfoMessage("Hello " + registeredUser.getName());
+    }
 
+    @Override
+    public void handleFailed(String message) {
+        ((RegisterView) view).displayErrorMessage(message);
+    }
+
+    public interface RegisterView extends AuthenticationPresenter.AuthenticationView {
+    }
 }
