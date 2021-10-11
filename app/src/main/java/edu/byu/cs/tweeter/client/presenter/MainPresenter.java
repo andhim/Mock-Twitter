@@ -24,7 +24,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class MainPresenter implements LogoutService.LogoutObserver, GetFollowersCountService.GetFollowersCountObserver, GetFollowingCountService.GetFollowingCountObserver, IsFollowerService.IsFollowerObserver, UnfollowService.UnfollowObserver, FollowService.FollowObserver, PostStatusService.PostStatusObserver {
 
     //View
-    public interface View {
+    public interface MainView {
         void logoutUser();
         void displayErrorMessage(String message);
 
@@ -104,10 +104,10 @@ public class MainPresenter implements LogoutService.LogoutObserver, GetFollowers
         view.displayInfoMessage("Successfully Posted!");
     }
 
-    private View view;
+    private MainView view;
     private static final String LOG_TAG = "MainActivity";
 
-    public MainPresenter(View view) {
+    public MainPresenter(MainView view) {
         this.view = view;
     }
 

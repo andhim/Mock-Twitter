@@ -43,7 +43,7 @@ public class FeedPresenter implements GetFeedService.GetFeedObserver, GetUserSer
     }
 
     //View
-    public interface View {
+    public interface FeedView {
         void addItems(List<Status> statuses);
 
         void displayInfoMessage(String message);
@@ -58,7 +58,7 @@ public class FeedPresenter implements GetFeedService.GetFeedObserver, GetUserSer
     //FeedPresenter
     private static final int PAGE_SIZE = 10;
 
-    private View view;
+    private FeedView view;
     private User user; //Feed Owner
     private AuthToken authToken;
 
@@ -66,7 +66,7 @@ public class FeedPresenter implements GetFeedService.GetFeedObserver, GetUserSer
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public FeedPresenter(View view, User user, AuthToken authToken) {
+    public FeedPresenter(FeedView view, User user, AuthToken authToken) {
         this.view = view;
         this.user = user;
         this.authToken = authToken;

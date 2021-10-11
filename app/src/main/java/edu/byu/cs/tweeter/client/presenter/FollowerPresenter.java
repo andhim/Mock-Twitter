@@ -40,7 +40,7 @@ public class FollowerPresenter implements GetFollowersService.GetFollowersObserv
         view.displayErrorMessage(message);
     }
 
-    public interface View {
+    public interface FollowerView {
         void addItems(List<User> followers);
         void navigateToUser(User user);
 
@@ -55,7 +55,7 @@ public class FollowerPresenter implements GetFollowersService.GetFollowersObserv
     //FollowerPresenter
     private static final int PAGE_SIZE = 10;
 
-    private View view;
+    private FollowerView view;
     private User targetUser;
     private AuthToken authToken;
 
@@ -63,7 +63,7 @@ public class FollowerPresenter implements GetFollowersService.GetFollowersObserv
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public FollowerPresenter(View view, AuthToken authToken, User targetUser) {
+    public FollowerPresenter(FollowerView view, AuthToken authToken, User targetUser) {
         this.view = view;
         this.authToken = authToken;
         this.targetUser = targetUser;

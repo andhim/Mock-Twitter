@@ -43,7 +43,7 @@ public class StoryPresenter implements GetStoryService.GetStoryObserver, GetUser
 
 
     //View
-    public interface View {
+    public interface StoryView {
         void addItems(List<Status> statuses);
 
         void displayInfoMessage(String message);
@@ -58,7 +58,7 @@ public class StoryPresenter implements GetStoryService.GetStoryObserver, GetUser
     //StoryPresenter
     private static final int PAGE_SIZE = 10;
 
-    private View view;
+    private StoryView view;
     private User user; // (Story Owner)
     private AuthToken authToken;
 
@@ -66,7 +66,7 @@ public class StoryPresenter implements GetStoryService.GetStoryObserver, GetUser
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public StoryPresenter(View view, User user, AuthToken authToken) {
+    public StoryPresenter(StoryView view, User user, AuthToken authToken) {
         this.view = view;
         this.user = user;
         this.authToken = authToken;

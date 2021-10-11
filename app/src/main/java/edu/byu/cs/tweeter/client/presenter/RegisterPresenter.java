@@ -5,7 +5,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class RegisterPresenter implements RegisterService.RegisterObserver {
 
-    public interface View {
+    public interface RegisterView {
         void navigateToUser(User user);
 
         void displayErrorMessage(String message);
@@ -27,9 +27,9 @@ public class RegisterPresenter implements RegisterService.RegisterObserver {
         view.displayErrorMessage(message);
     }
 
-    private View view;
+    private RegisterView view;
 
-    public RegisterPresenter(View view) {
+    public RegisterPresenter(RegisterView view) {
         this.view = view;
     }
 

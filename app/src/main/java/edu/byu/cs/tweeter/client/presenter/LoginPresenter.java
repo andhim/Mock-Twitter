@@ -6,7 +6,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter implements LoginService.LoginObserver {
 
-    public interface View {
+    public interface LoginView {
 
         void navigateToUser(User user);
 
@@ -30,9 +30,9 @@ public class LoginPresenter implements LoginService.LoginObserver {
     }
 
 
-    private View view;
+    private LoginView view;
 
-    public LoginPresenter(View view) {
+    public LoginPresenter(LoginView view) {
         this.view = view;
     }
 

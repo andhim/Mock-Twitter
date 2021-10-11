@@ -43,7 +43,7 @@ public class FollowingPresenter implements GetFollowingService.GetFollowingObser
     }
 
     //View Interface
-    public interface View {
+    public interface FollowingView {
 
         void addItems(List<User> followees);
         void navigateToUser(User user);
@@ -57,7 +57,7 @@ public class FollowingPresenter implements GetFollowingService.GetFollowingObser
     //FollowingPresenter
     private static final int PAGE_SIZE = 10;
 
-    private View view;
+    private FollowingView view;
     private User targetUser;
     private AuthToken authToken;
 
@@ -65,7 +65,7 @@ public class FollowingPresenter implements GetFollowingService.GetFollowingObser
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public FollowingPresenter(View view, AuthToken authToken, User targetUser) {
+    public FollowingPresenter(FollowingView view, AuthToken authToken, User targetUser) {
         this.view = view;
         this.targetUser = targetUser;
         this.authToken = authToken;
