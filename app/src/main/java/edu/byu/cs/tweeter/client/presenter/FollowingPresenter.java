@@ -13,7 +13,7 @@ public class FollowingPresenter implements GetFollowingService.GetFollowingObser
 
     //GetFollowingObserver
     @Override
-    public void getFollowingSucceeded(List<User> followees, User lastFollowee, boolean hasMorePages) {
+    public void getItemSucceeded(List<User> followees, User lastFollowee, boolean hasMorePages) {
         this.lastFollowee = lastFollowee;
         this.hasMorePages = hasMorePages;
         this.isLoading = false;

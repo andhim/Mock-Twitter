@@ -12,7 +12,7 @@ public class StoryPresenter implements GetStoryService.GetStoryObserver, GetUser
 
     //GetStoryObserver
     @Override
-    public void getStorySucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages) {
+    public void getItemSucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages) {
         this.lastStatus = lastStatus;
         this.hasMorePages = hasMorePages;
         this.isLoading = false;
@@ -40,6 +40,7 @@ public class StoryPresenter implements GetStoryService.GetStoryObserver, GetUser
     public void handleFailed(String message) {
         view.displayErrorMessage(message);
     }
+
 
     //View
     public interface View {

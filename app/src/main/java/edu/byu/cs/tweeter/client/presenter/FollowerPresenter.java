@@ -24,7 +24,7 @@ public class FollowerPresenter implements GetFollowersService.GetFollowersObserv
 
     //GetFollowersObserver
     @Override
-    public void getFollowersSucceeded(List<User> followers, User lastFollower, boolean hasMorePages) {
+    public void getItemSucceeded(List<User> followers, User lastFollower, boolean hasMorePages) {
         this.lastFollower = lastFollower;
         this.hasMorePages = hasMorePages;
         this.isLoading = false;

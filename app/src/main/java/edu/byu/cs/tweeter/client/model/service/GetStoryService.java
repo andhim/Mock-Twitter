@@ -11,10 +11,9 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetStoryService extends Service {
+public class GetStoryService extends GetPagedService {
     //StoryFragment
-    public interface GetStoryObserver extends ServiceOperationObserver{
-        void getStorySucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages);
+    public interface GetStoryObserver extends GetPagedService.GetItemObserver<Status>{
     }
 
     public void getStory(AuthToken authToken, User user, int limit, Status lastStatus, GetStoryObserver observer) {
@@ -33,11 +32,7 @@ public class GetStoryService extends Service {
 
         @Override
         protected void handleSuccess(Message msg) {
-            List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.ITEMS_KEY);
-            boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-            Status lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-
-            ((GetStoryService.GetStoryObserver) this.observer).getStorySucceeded(statuses, lastStatus, hasMorePages);
+            getItems(msg, (GetItemObserver) this.observer);
         }
 
         @Override

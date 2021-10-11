@@ -10,10 +10,9 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFeedService extends Service {
+public class GetFeedService extends GetPagedService {
     //FeedFragment
-    public interface GetFeedObserver extends ServiceOperationObserver {
-        void getFeedSucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages);
+    public interface GetFeedObserver extends GetPagedService.GetItemObserver<Status> {
     }
 
     public void getFeed(AuthToken authToken, User user, int limit, Status lastStatus, GetFeedObserver observer) {
@@ -32,11 +31,7 @@ public class GetFeedService extends Service {
 
         @Override
         protected void handleSuccess(Message msg) {
-            List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.ITEMS_KEY);
-            boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-            Status lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
-
-            ((GetFeedService.GetFeedObserver) this.observer).getFeedSucceeded(statuses, lastStatus, hasMorePages);
+            getItems(msg, (GetPagedService.GetItemObserver) this.observer);
         }
 
         @Override

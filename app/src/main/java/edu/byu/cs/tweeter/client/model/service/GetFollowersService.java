@@ -11,11 +11,10 @@ import edu.byu.cs.tweeter.client.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFollowersService extends Service {
+public class GetFollowersService extends GetPagedService<User> {
 
     //FollowerFragment
-    public interface GetFollowersObserver extends ServiceOperationObserver {
-        void getFollowersSucceeded(List<User> users, User lastFollower, boolean hasMorePages);
+    public interface GetFollowersObserver extends GetPagedService.GetItemObserver<User> {
     }
 
     public void getFollowers(AuthToken authToken, User targetUser, int limit, User lastFollower, GetFollowersObserver observer) {
@@ -31,11 +30,7 @@ public class GetFollowersService extends Service {
 
         @Override
         protected void handleSuccess(Message msg) {
-            List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.ITEMS_KEY);
-            boolean hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-            User lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
-
-            ((GetFollowersService.GetFollowersObserver) this.observer).getFollowersSucceeded(followers, lastFollower, hasMorePages);
+            getItems(msg, (GetItemObserver) this.observer);
         }
 
         @Override

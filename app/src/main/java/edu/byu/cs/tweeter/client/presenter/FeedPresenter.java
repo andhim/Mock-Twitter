@@ -12,7 +12,7 @@ public class FeedPresenter implements GetFeedService.GetFeedObserver, GetUserSer
 
     //GetFeedObserver
     @Override
-    public void getFeedSucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages) {
+    public void getItemSucceeded(List<Status> statuses, Status lastStatus, boolean hasMorePages) {
         this.lastStatus = lastStatus;
         this.hasMorePages = hasMorePages;
         this.isLoading = false;
