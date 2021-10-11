@@ -47,11 +47,11 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView{
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-
-    @Override
-    public void addItems(List<Status> statuses) {
-        feedRecyclerViewAdapter.addItems(statuses);
-    }
+//
+//    @Override
+//    public void addItems(List<Status> items) {
+//        feedRecyclerViewAdapter.addItems(items);
+//    }
 
     @Override
     public void displayInfoMessage(String message) {
@@ -64,25 +64,29 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView{
     }
 
     @Override
-    public void navigateToUser(User user) {
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-        startActivity(intent);
-    }
-
-    @Override
     public void setLoading(boolean value) {
         isLoading = value;
         if (isLoading) {
             try {
-                feedRecyclerViewAdapter.addLoadingFooter(); 
+                feedRecyclerViewAdapter.addLoadingFooter();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         } else {
             feedRecyclerViewAdapter.removeLoadingFooter();
         }
+    }
 
+    @Override
+    public void addItems(List<Status> items) {
+        feedRecyclerViewAdapter.addItems(items);
+    }
+
+    @Override
+    public void navigateToUser(User user) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        startActivity(intent);
     }
 
     private boolean isLoading;

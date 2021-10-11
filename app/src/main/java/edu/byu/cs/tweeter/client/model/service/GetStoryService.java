@@ -12,10 +12,6 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetStoryService extends GetPagedService {
-    //StoryFragment
-    public interface GetStoryObserver extends GetPagedService.GetItemObserver<Status>{
-    }
-
     public void getStory(AuthToken authToken, User user, int limit, Status lastStatus, GetStoryObserver observer) {
         execute(new GetStoryTask(authToken, user, limit, lastStatus, new GetStoryHandler(observer)));
     }
@@ -41,4 +37,7 @@ public class GetStoryService extends GetPagedService {
         }
     }
 
+    //StoryFragment
+    public interface GetStoryObserver extends GetPagedService.GetItemObserver<Status>{
+    }
 }

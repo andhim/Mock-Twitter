@@ -9,5 +9,10 @@ public class Presenter {
         this.view = view;
     }
 
+    public interface View {
+        void displayErrorMessage(String message);
+        void displayInfoMessage(String message);
+    }
+
 
 }
