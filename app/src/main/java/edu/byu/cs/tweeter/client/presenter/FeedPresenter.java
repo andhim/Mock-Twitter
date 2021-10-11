@@ -5,6 +5,7 @@ import android.graphics.pdf.PdfDocument;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.GetFeedService;
+import edu.byu.cs.tweeter.client.model.service.GetPagedService;
 import edu.byu.cs.tweeter.client.model.service.GetUserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -44,6 +45,11 @@ public class FeedPresenter extends PagedPresenter<Status> implements GetFeedServ
     @Override
     public void handleFailed(String message) {
         ((FeedView) this.view).displayErrorMessage("Failed to get user's profile: " + message);
+    }
+
+    @Override
+    public void getItems(AuthToken authToken, User user, int limit, Status lastStatus, GetPagedService.GetItemObserver observer) {
+        new GetFeedService().getFeed(authToken, user, limit, lastItem, this);
     }
 
     //View

@@ -5,6 +5,7 @@ import java.util.List;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.GetFollowersService;
 import edu.byu.cs.tweeter.client.model.service.GetFollowingService;
+import edu.byu.cs.tweeter.client.model.service.GetPagedService;
 import edu.byu.cs.tweeter.client.model.service.GetUserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -44,6 +45,11 @@ public class FollowingPresenter extends PagedPresenter<User> implements GetFollo
     @Override
     public void handleFailed(String message) {
         ((FollowingView) view).displayErrorMessage(message);
+    }
+
+    @Override
+    public void getItems(AuthToken authToken, User user, int limit, User lastItem, GetPagedService.GetItemObserver observer) {
+        new GetFollowingService().getFollowing(authToken, user, limit, lastItem, this);
     }
 
     //View Interface

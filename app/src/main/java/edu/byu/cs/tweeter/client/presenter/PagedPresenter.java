@@ -33,31 +33,13 @@ public abstract class PagedPresenter <T> extends Presenter{
             if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
                 isLoading = true;
                 ((PagedView) this.view).setLoading(isLoading);
-
-                if (this instanceof GetFeedService.GetFeedObserver) {
-                    new GetFeedService().getFeed(authToken, targetUser, PAGE_SIZE, (Status) lastItem, (GetFeedService.GetFeedObserver) this);
-                } else if (this instanceof GetStoryService.GetStoryObserver) {
-                    new GetStoryService().getStory(authToken, targetUser, PAGE_SIZE, (Status) lastItem, (GetStoryService.GetStoryObserver) this);
-                } else if (this instanceof GetFollowersService.GetFollowersObserver) {
-                    new GetFollowersService().getFollowers(authToken, targetUser, PAGE_SIZE, (User) lastItem, (GetFollowersService.GetFollowersObserver) this);
-                } else if (this instanceof GetFollowingService.GetFollowingObserver) {
-                    new GetFollowingService().getFollowing(authToken, targetUser, PAGE_SIZE, (User) lastItem, (GetFollowingService.GetFollowingObserver) this);
-                }
+                getItems(authToken, targetUser, PAGE_SIZE, lastItem, (GetPagedService.GetItemObserver) this);
             }
         } else {
             if (!isLoading && hasMorePages) {
                 isLoading = true;
                 ((PagedView) this.view).setLoading(isLoading);
-
-                if (this instanceof GetFeedService.GetFeedObserver) {
-                    new GetFeedService().getFeed(authToken, targetUser, PAGE_SIZE, (Status) lastItem, (GetFeedService.GetFeedObserver) this);
-                } else if (this instanceof GetStoryService.GetStoryObserver) {
-                    new GetStoryService().getStory(authToken, targetUser, PAGE_SIZE, (Status) lastItem, (GetStoryService.GetStoryObserver) this);
-                } else if (this instanceof GetFollowersService.GetFollowersObserver) {
-                    new GetFollowersService().getFollowers(authToken, targetUser, PAGE_SIZE, (User) lastItem, (GetFollowersService.GetFollowersObserver) this);
-                } else if (this instanceof GetFollowingService.GetFollowingObserver) {
-                    new GetFollowingService().getFollowing(authToken, targetUser, PAGE_SIZE, (User) lastItem, (GetFollowingService.GetFollowingObserver) this);
-                }
+                getItems(authToken, targetUser, PAGE_SIZE, lastItem, (GetPagedService.GetItemObserver) this);
             }
         }
     }
@@ -71,4 +53,7 @@ public abstract class PagedPresenter <T> extends Presenter{
         void addItems(List<T> items);
         void navigateToUser(User user);
     }
+
+
+    public abstract void getItems(AuthToken authToken, User user, int limit, T lastStatus, GetPagedService.GetItemObserver observer);
 }

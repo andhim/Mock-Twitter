@@ -47,11 +47,6 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView{
     private static final int LOADING_DATA_VIEW = 0;
     private static final int ITEM_VIEW = 1;
 
-//
-//    @Override
-//    public void addItems(List<Status> items) {
-//        feedRecyclerViewAdapter.addItems(items);
-//    }
 
     @Override
     public void displayInfoMessage(String message) {

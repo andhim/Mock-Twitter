@@ -2,6 +2,8 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.model.service.GetFeedService;
+import edu.byu.cs.tweeter.client.model.service.GetPagedService;
 import edu.byu.cs.tweeter.client.model.service.GetUserService;
 import edu.byu.cs.tweeter.client.model.service.GetStoryService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -42,6 +44,12 @@ public class StoryPresenter extends PagedPresenter<Status> implements GetStorySe
     @Override
     public void handleFailed(String message) {
         view.displayErrorMessage(message);
+    }
+
+
+    @Override
+    public void getItems(AuthToken authToken, User user, int limit, Status lastStatus, GetPagedService.GetItemObserver observer) {
+        new GetStoryService().getStory(authToken, user, limit, lastItem, this);
     }
 
     //View
