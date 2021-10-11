@@ -21,7 +21,6 @@ public class FeedPresenter implements GetFeedService.GetFeedObserver, GetUserSer
         view.addItems(statuses);
     }
 
-    //TODO
     @Override
     public void handleFailedWithOperations(String message) {
         this.isLoading = false;

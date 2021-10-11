@@ -22,11 +22,11 @@ public class StoryPresenter implements GetStoryService.GetStoryObserver, GetUser
     }
 
     @Override
-    public void handleFailedWithOperations(String message) { //TODO
+    public void handleFailedWithOperations(String message) {
         this.isLoading = false;
         view.setLoading(isLoading);
 
-        view.displayErrorMessage("Failed to get story: " + message);
+        view.displayErrorMessage(message);
     }
 
     //GetUserObserver

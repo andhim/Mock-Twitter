@@ -1,20 +1,16 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
 import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 
-public class PostStatusService {
+public class PostStatusService extends Service {
     //Main Activity
 
     public interface PostStatusObserver extends ServiceObserver {
@@ -22,9 +18,7 @@ public class PostStatusService {
     }
 
     public void postStatus(AuthToken authToken, Status newStatus, PostStatusObserver observer) {
-        PostStatusTask statusTask = new PostStatusTask(authToken, newStatus, new PostStatusHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(statusTask);
+        execute(new PostStatusTask(authToken, newStatus, new PostStatusHandler(observer)));
     }
 
     private class PostStatusHandler extends BackgroundTaskHandler {

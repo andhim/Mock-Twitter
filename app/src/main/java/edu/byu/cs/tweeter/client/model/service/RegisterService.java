@@ -16,7 +16,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterService {
+public class RegisterService extends Service{
     //Register Fragment
     public interface RegisterObserver extends ServiceObserver {
         void registerSucceeded(User registeredUser);
@@ -24,9 +24,7 @@ public class RegisterService {
 
     public void register(String firstName, String lastName, String alias, String password, String imageBytesBase64, RegisterObserver observer) {
         //Send register request.
-        RegisterTask registerTask = new RegisterTask(firstName, lastName, alias, password, imageBytesBase64, new RegisterHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(registerTask);
+        execute(new RegisterTask(firstName, lastName, alias, password, imageBytesBase64, new RegisterHandler(observer)));
     }
 
     private class RegisterHandler extends BackgroundTaskHandler {

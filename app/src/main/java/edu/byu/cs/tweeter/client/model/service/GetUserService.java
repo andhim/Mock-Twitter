@@ -1,21 +1,16 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
 import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
-import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.BackgroundTaskHandler;
-import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetUserService {
+public class GetUserService extends Service {
 
     //Following, Follower, Feed, Story Fragments
     public interface GetUserObserver extends ServiceObserver{
@@ -23,9 +18,7 @@ public class GetUserService {
     }
 
     public void getUser(AuthToken authToken, String alias, GetUserObserver observer) {
-        GetUserTask getUserTask = new GetUserTask(authToken, alias, new GetUserHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getUserTask);
+        execute(new GetUserTask(authToken, alias, new GetUserHandler(observer)));
     }
 
     /**
@@ -42,7 +35,6 @@ public class GetUserService {
         @Override
         protected void handleSuccess(Message msg) {
             User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-
             ((GetUserService.GetUserObserver) this.observer).getUserSucceeded(user);
         }
 

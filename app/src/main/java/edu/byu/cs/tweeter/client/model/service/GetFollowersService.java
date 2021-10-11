@@ -1,22 +1,17 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
 import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFollowersService {
+public class GetFollowersService extends Service {
 
     //FollowerFragment
     public interface GetFollowersObserver extends ServiceOperationObserver {
@@ -24,9 +19,7 @@ public class GetFollowersService {
     }
 
     public void getFollowers(AuthToken authToken, User targetUser, int limit, User lastFollower, GetFollowersObserver observer) {
-        GetFollowersTask getFollowersTask = new GetFollowersTask(authToken,targetUser, limit, lastFollower, new GetFollowersHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getFollowersTask);
+        execute(new GetFollowersTask(authToken,targetUser, limit, lastFollower, new GetFollowersHandler(observer)));
     }
 
     private class GetFollowersHandler extends BackgroundTaskHandler {

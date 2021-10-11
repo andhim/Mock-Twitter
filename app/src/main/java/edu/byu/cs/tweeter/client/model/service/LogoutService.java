@@ -2,14 +2,11 @@ package edu.byu.cs.tweeter.client.model.service;
 
 import android.os.Message;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 
-public class LogoutService  {
+public class LogoutService extends Service {
 
     //Main Fragment
     public interface LogoutObserver extends ServiceObserver {
@@ -17,9 +14,7 @@ public class LogoutService  {
     }
 
     public void logout(AuthToken authToken, LogoutObserver observer) {
-        LogoutTask logoutTask = new LogoutTask(authToken, new LogoutHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(logoutTask);
+        execute(new LogoutTask(authToken, new LogoutHandler(observer)));
     }
 
     private class LogoutHandler extends BackgroundTaskHandler {
