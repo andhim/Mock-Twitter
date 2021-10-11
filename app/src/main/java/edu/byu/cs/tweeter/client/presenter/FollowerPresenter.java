@@ -44,8 +44,6 @@ public class FollowerPresenter extends PagedPresenter<User> implements GetFollow
         ((FollowerView) this.view).displayErrorMessage(message);
     }
 
-
-
     public void nullChecker(User user) {
         if (user == null) {
             ((FollowerView) this.view).logger("user is null!");

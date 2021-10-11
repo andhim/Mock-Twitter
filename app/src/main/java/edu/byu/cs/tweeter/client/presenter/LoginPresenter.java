@@ -4,49 +4,36 @@ import edu.byu.cs.tweeter.client.model.service.LoginService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class LoginPresenter implements LoginService.LoginObserver {
-
-    public interface LoginView {
-
-        void navigateToUser(User user);
-
-        void displayErrorMessage(String message);
-        void clearErrorMessage();
-
-        void displayInfoMessage(String message);
-        void clearInfoMessage();
-    }
+public class LoginPresenter extends AuthenticationPresenter implements LoginService.LoginObserver {
 
     @Override
     public void loginSucceeded(AuthToken authToken, User user) {
-        view.navigateToUser(user);
-        view.clearErrorMessage();
-        view.displayInfoMessage("Hello " + user.getName());
+        ((LoginView) view).navigateToUser(user);
+        ((LoginView) view).clearErrorMessage();
+        ((LoginView) view).displayInfoMessage("Hello " + user.getName());
     }
 
     @Override
     public void handleFailed(String message) {
-        view.displayErrorMessage(message);
+        ((LoginView) view).displayErrorMessage(message);
     }
 
 
-    private LoginView view;
-
     public LoginPresenter(LoginView view) {
-        this.view = view;
+        super(view);
     }
 
     public void login(String alias, String password) {
 
-        view.clearErrorMessage();
-        view.clearInfoMessage();
+        ((LoginView) view).clearErrorMessage();
+        ((LoginView) view).clearInfoMessage();
 
         String message = validateLogin(alias, password);
         if (message == null) {
-            view.displayInfoMessage("Logging In...");
+            ((LoginView) view).displayInfoMessage("Logging In...");
             new LoginService().login(alias,password,this);
         } else {
-            view.displayErrorMessage("Login failed: " + message);
+            ((LoginView) view).displayErrorMessage("Login failed: " + message);
         }
     }
 
@@ -60,7 +47,9 @@ public class LoginPresenter implements LoginService.LoginObserver {
         if (password.length() == 0) {
             return "Password cannot be empty.";
         }
-
         return null;
+    }
+
+    public interface LoginView extends AuthenticationPresenter.AuthenticationView {
     }
 }

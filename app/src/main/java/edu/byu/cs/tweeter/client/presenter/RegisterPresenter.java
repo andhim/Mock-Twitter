@@ -3,40 +3,15 @@ package edu.byu.cs.tweeter.client.presenter;
 import edu.byu.cs.tweeter.client.model.service.RegisterService;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter implements RegisterService.RegisterObserver {
-
-    public interface RegisterView {
-        void navigateToUser(User user);
-
-        void displayErrorMessage(String message);
-        void clearErrorMessage();
-
-        void displayInfoMessage(String message);
-        void clearInfoMessage();
-    }
-
-    @Override
-    public void registerSucceeded(User registeredUser) {
-        view.navigateToUser(registeredUser);
-        view.clearErrorMessage();
-        view.displayInfoMessage("Hello " + registeredUser.getName());
-    }
-
-    @Override
-    public void handleFailed(String message) {
-        view.displayErrorMessage(message);
-    }
-
-    private RegisterView view;
+public class RegisterPresenter extends AuthenticationPresenter implements RegisterService.RegisterObserver {
 
     public RegisterPresenter(RegisterView view) {
-        this.view = view;
+        super(view);
     }
 
     public void register(String firstName, String lastName, String alias, String password, String imageBytesBase64) {
-
-        view.clearErrorMessage();
-        view.clearInfoMessage();
+        ((RegisterView) view).clearErrorMessage();
+        ((RegisterView) view).clearInfoMessage();
 
         String message = validateRegistration(firstName, lastName, alias, password, imageBytesBase64);
         if (message == null) {
@@ -73,5 +48,18 @@ public class RegisterPresenter implements RegisterService.RegisterObserver {
         return null;
     }
 
+    @Override
+    public void registerSucceeded(User registeredUser) {
+        ((RegisterView) view).navigateToUser(registeredUser);
+        ((RegisterView) view).clearErrorMessage();
+        ((RegisterView) view).displayInfoMessage("Hello " + registeredUser.getName());
+    }
 
+    @Override
+    public void handleFailed(String message) {
+        ((RegisterView) view).displayErrorMessage(message);
+    }
+
+    public interface RegisterView extends AuthenticationPresenter.AuthenticationView {
+    }
 }

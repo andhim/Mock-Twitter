@@ -28,12 +28,6 @@ public abstract class PagedPresenter <T> extends Presenter{
 
     private static final int PAGE_SIZE = 10;
 
-    public interface PagedView <T> extends View {
-        void setLoading(boolean value);
-        void addItems(List<T> items);
-        void navigateToUser(User user);
-    }
-
     public void loadMoreItems(boolean isInitial) {
         if (isInitial) {
             if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
@@ -68,8 +62,13 @@ public abstract class PagedPresenter <T> extends Presenter{
         }
     }
 
-
     public void gotoUser(String alias) {
         new GetUserService().getUser(authToken, alias, (GetUserService.GetUserObserver) this);
+    }
+
+    public interface PagedView <T> extends View {
+        void setLoading(boolean value);
+        void addItems(List<T> items);
+        void navigateToUser(User user);
     }
 }

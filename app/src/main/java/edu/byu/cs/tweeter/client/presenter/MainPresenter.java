@@ -21,94 +21,11 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter implements LogoutService.LogoutObserver, GetFollowersCountService.GetFollowersCountObserver, GetFollowingCountService.GetFollowingCountObserver, IsFollowerService.IsFollowerObserver, UnfollowService.UnfollowObserver, FollowService.FollowObserver, PostStatusService.PostStatusObserver {
-
-    //View
-    public interface MainView {
-        void logoutUser();
-        void displayErrorMessage(String message);
-
-        void displayInfoMessage(String message);
-
-        void setFollowersCount(int count);
-        void setFollowingCount(int count);
-
-        //IsFollower
-        void setFollower();
-        void setNotFollower();
-
-        //Unfollow
-        void updateFollow(boolean removed);
-        void setFollowButton(boolean setEnabled);
-    }
-    @Override
-    public void handleFailed(String message) {
-        view.displayErrorMessage(message);
-    }
-
-    //Follow && Unfollow
-    @Override
-    public void handleFailedWithOperations(String message) {
-        view.displayErrorMessage(message);
-        view.setFollowButton(true);
-    }
-
-    //GetFollowersCountService
-    @Override
-    public void getFollowersCountSucceeded(int count) {
-        view.setFollowersCount(count);
-    }
-
-
-    //GetFollowingCountService
-    @Override
-    public void getFollowingCountSucceeded(int count) {
-        view.setFollowingCount(count);
-    }
-
-    //Logout
-    @Override
-    public void logoutSucceeded() {
-        view.logoutUser();
-    }
-
-    //IsFollower
-    @Override
-    public void isFollowerSucceeded(boolean isFollower) {
-        if (isFollower) {
-            view.setFollower();
-        } else {
-            view.setNotFollower();
-        }
-    }
-
-    //Unfollow
-    @Override
-    public void unfollowSucceeded() {
-        view.updateFollow(true);
-        view.setFollowButton(true);
-    }
-
-    //Follow
-    @Override
-    public void followSucceeded() {
-        view.updateFollow(false);
-        view.setFollowButton(true);
-    }
-
-
-    //PostStatus
-
-    @Override
-    public void postStatusSucceeded() {
-        view.displayInfoMessage("Successfully Posted!");
-    }
-
-    private MainView view;
-    private static final String LOG_TAG = "MainActivity";
+public class MainPresenter extends Presenter implements LogoutService.LogoutObserver, GetFollowersCountService.GetFollowersCountObserver, GetFollowingCountService.GetFollowingCountObserver, IsFollowerService.IsFollowerObserver, UnfollowService.UnfollowObserver, FollowService.FollowObserver, PostStatusService.PostStatusObserver {
+    private static final String LOG_TAG = "Main Presenter";
 
     public MainPresenter(MainView view) {
-        this.view = view;
+        super(view);
     }
 
     public void logout(AuthToken authToken) {
@@ -212,4 +129,81 @@ public class MainPresenter implements LogoutService.LogoutObserver, GetFollowers
         return containedMentions;
     }
 
+
+    @Override
+    public void handleFailed(String message) {
+        view.displayErrorMessage(message);
+    }
+
+    //Follow && Unfollow
+    @Override
+    public void handleFailedWithOperations(String message) {
+        ((MainView) view).displayErrorMessage(message);
+        ((MainView) view).setFollowButton(true);
+    }
+
+    //GetFollowersCountService
+    @Override
+    public void getFollowersCountSucceeded(int count) {
+        ((MainView) view).setFollowersCount(count);
+    }
+
+
+    //GetFollowingCountService
+    @Override
+    public void getFollowingCountSucceeded(int count) {
+        ((MainView) view).setFollowingCount(count);
+    }
+
+    //Logout
+    @Override
+    public void logoutSucceeded() {
+        ((MainView) view).logoutUser();
+    }
+
+    //IsFollower
+    @Override
+    public void isFollowerSucceeded(boolean isFollower) {
+        if (isFollower) {
+            ((MainView) view).setFollower();
+        } else {
+            ((MainView) view).setNotFollower();
+        }
+    }
+
+    //Unfollow
+    @Override
+    public void unfollowSucceeded() {
+        ((MainView) view).updateFollow(true);
+        ((MainView) view).setFollowButton(true);
+    }
+
+    //Follow
+    @Override
+    public void followSucceeded() {
+        ((MainView) view).updateFollow(false);
+        ((MainView) view).setFollowButton(true);
+    }
+
+    //PostStatus
+    @Override
+    public void postStatusSucceeded() {
+        ((MainView) view).displayInfoMessage("Successfully Posted!");
+    }
+
+    //View
+    public interface MainView extends Presenter.View{
+        void logoutUser();
+
+        void setFollowersCount(int count);
+        void setFollowingCount(int count);
+
+        //IsFollower
+        void setFollower();
+        void setNotFollower();
+
+        //Unfollow
+        void updateFollow(boolean removed);
+        void setFollowButton(boolean setEnabled);
+    }
 }
