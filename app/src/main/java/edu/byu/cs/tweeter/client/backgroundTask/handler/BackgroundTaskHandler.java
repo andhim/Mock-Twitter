@@ -20,20 +20,22 @@ public abstract class BackgroundTaskHandler <T extends ServiceObserver> extends 
 
     @Override
     public void handleMessage(@NonNull Message msg) {
+        StringBuffer message = new StringBuffer();
         boolean success = msg.getData().getBoolean(BackgroundTask.SUCCESS_KEY);
         if (success) {
             handleSuccess(msg);
         } else if (msg.getData().containsKey(BackgroundTask.MESSAGE_KEY)) {
-            String message = getFailedMessagePrefix() + msg.getData().getString(BackgroundTask.MESSAGE_KEY);
+            message.append(getFailedMessagePrefix() + msg.getData().getString(BackgroundTask.MESSAGE_KEY));
             if (observer instanceof ServiceOperationObserver) {
-                ((ServiceOperationObserver) observer).handleFailedWithOperations(message);
+                ((ServiceOperationObserver) observer).handleFailedWithOperations(message.toString());
             } else {
-                observer.handleFailed(message);
+                observer.handleFailed(message.toString());
             }
         } else if (msg.getData().containsKey(BackgroundTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(BackgroundTask.EXCEPTION_KEY);
-            String message = getFailedMessagePrefix() + ex.getMessage();
-            observer.handleFailed(message);
+            message.append(getFailedMessagePrefix() + ex.getMessage());
+            message.replace(message.length()-2, message.length()-1, " because of exception: ");
+            observer.handleFailed(message.toString());
         }
     }
 

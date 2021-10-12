@@ -22,7 +22,7 @@ public class PostStatusService extends Service {
     }
 
     private class PostStatusHandler extends BackgroundTaskHandler {
-        private final String PREFIX_MESSAGE = "Failed to post status: ";
+        private final String PREFIX_MESSAGE = "Failed to post the status: ";
 
         public PostStatusHandler(PostStatusObserver observer) {
             super(observer);

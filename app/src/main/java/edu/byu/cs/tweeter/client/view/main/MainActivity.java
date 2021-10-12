@@ -201,18 +201,10 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         }
     }
 
-
-
     @Override
     public void onStatusPosted(String post) {
         presenter.postStatus(Cache.getInstance().getCurrUserAuthToken(),post, Cache.getInstance().getCurrUser());
     }
-
-
-
-
-
-
 
     public void updateSelectedUserFollowingAndFollowers() {
         // Get count of most recently selected user's followers.
