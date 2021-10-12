@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.GetFollowersCountService;
 import edu.byu.cs.tweeter.client.model.service.GetFollowingCountService;
@@ -158,6 +159,8 @@ public class MainPresenter extends Presenter implements LogoutService.LogoutObse
     //Logout
     @Override
     public void logoutSucceeded() {
+        //Clear user data (cached data).
+        Cache.getInstance().clearCache();
         ((MainView) view).logoutUser();
     }
 
