@@ -14,6 +14,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.GetFollowersCountService;
 import edu.byu.cs.tweeter.client.model.service.GetFollowingCountService;
+import edu.byu.cs.tweeter.client.model.service.GetUserService;
 import edu.byu.cs.tweeter.client.model.service.IsFollowerService;
 import edu.byu.cs.tweeter.client.model.service.LogoutService;
 import edu.byu.cs.tweeter.client.model.service.PostStatusService;
@@ -25,8 +26,12 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class MainPresenter extends Presenter implements LogoutService.LogoutObserver, GetFollowersCountService.GetFollowersCountObserver, GetFollowingCountService.GetFollowingCountObserver, IsFollowerService.IsFollowerObserver, UnfollowService.UnfollowObserver, FollowService.FollowObserver, PostStatusService.PostStatusObserver {
     private static final String LOG_TAG = "Main Presenter";
 
+    private PostStatusService postStatusService;
+
     public MainPresenter(MainView view) {
         super(view);
+        this.postStatusService = getPostStatusService();
+        //TODO: other services
     }
 
     public void logout(AuthToken authToken) {
@@ -57,13 +62,20 @@ public class MainPresenter extends Presenter implements LogoutService.LogoutObse
     //postStatus
     public void postStatus(AuthToken authToken, String post, User currUser)  {
         try {
-            view.displayInfoMessage("Pending Status...");
+            view.displayInfoMessage("Posting Status...");
             Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
-            new PostStatusService().postStatus(authToken, newStatus, this);
+            getPostStatusService().postStatus(authToken, newStatus, this);
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             view.displayErrorMessage("Failed to post the status because of exception: " + ex.getMessage());
         }
+    }
+
+    public PostStatusService getPostStatusService() {
+        if (postStatusService == null) {
+            return new PostStatusService();
+        }
+        return postStatusService;
     }
 
     private String getFormattedDateTime() throws ParseException {

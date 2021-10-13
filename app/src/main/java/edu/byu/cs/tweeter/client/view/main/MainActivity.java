@@ -30,8 +30,6 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.MainView {
 
-
-
     public static final String CURRENT_USER_KEY = "CurrentUser";
 
     //GetFollowersCount
@@ -107,8 +105,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     private TextView followerCount;
     private Button followButton;
     private MainPresenter presenter;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
