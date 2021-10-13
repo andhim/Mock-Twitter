@@ -11,7 +11,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetStoryService extends GetPagedService {
+public class GetStoryService extends GetPagedService<Status> {
     public void getStory(AuthToken authToken, User user, int limit, Status lastStatus, GetStoryObserver observer) {
         execute(new GetStoryTask(authToken, user, limit, lastStatus, new GetStoryHandler(observer)));
     }
@@ -19,7 +19,7 @@ public class GetStoryService extends GetPagedService {
     /**
      * Message handler (i.e., observer) for GetStoryTask.
      */
-    private class GetStoryHandler extends BackgroundTaskHandler {
+    private class GetStoryHandler extends BackgroundTaskHandler<GetStoryObserver> {
         private final String PREFIX_MESSAGE = "Failed to get story: ";
 
         public GetStoryHandler(GetStoryObserver observer) {
@@ -28,7 +28,7 @@ public class GetStoryService extends GetPagedService {
 
         @Override
         protected void handleSuccess(Message msg) {
-            getItems(msg, (GetItemObserver) this.observer);
+            getItems(msg, this.observer);
         }
 
         @Override
