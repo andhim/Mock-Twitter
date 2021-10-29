@@ -4,33 +4,20 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Represents a user in the system (i.e., a "user profile").
+ * Represents a user in the system.
  */
 public class User implements Comparable<User>, Serializable {
 
-    /**
-     * The user's first name.
-     */
-    public String firstName;
-    /**
-     * The user's last name.
-     */
-    public String lastName;
-    /**
-     * The users "alias" or "handle" by which they are known to other users (e.g., @susan)
-     */
-    public String alias;
-    /**
-     * URL that points to the user's profile image.
-     */
-    public String imageUrl;
-    /**
-     * Byte array containing the user's profile image (after download from web).
-     */
-    private byte[] imageBytes;
+    private String firstName;
+    private String lastName;
+    private String alias;
+    private String imageUrl;
+    private byte [] imageBytes;
 
-    public User() {
-    }
+    /**
+     * Allows construction of the object from Json. Private so it won't be called by other code.
+     */
+    private User() {}
 
     public User(String firstName, String lastName, String imageURL) {
         this(firstName, lastName, String.format("@%s%s", firstName, lastName), imageURL);
@@ -47,8 +34,16 @@ public class User implements Comparable<User>, Serializable {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getName() {
@@ -59,11 +54,19 @@ public class User implements Comparable<User>, Serializable {
         return alias;
     }
 
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
 
-    public byte[] getImageBytes() {
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public byte [] getImageBytes() {
         return imageBytes;
     }
 
