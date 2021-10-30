@@ -2,12 +2,9 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.model.service.GetFeedService;
 import edu.byu.cs.tweeter.client.model.service.GetPagedService;
-import edu.byu.cs.tweeter.client.model.service.GetStoryService;
-import edu.byu.cs.tweeter.client.model.service.GetUserService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public abstract class PagedPresenter <T> extends Presenter{
@@ -43,7 +40,7 @@ public abstract class PagedPresenter <T> extends Presenter{
     }
 
     public void gotoUser(String alias) {
-        new GetUserService().getUser(authToken, alias, (GetUserService.GetUserObserver) this);
+        new UserService().getUser(authToken, alias, (UserService.GetUserObserver) this);
     }
 
     public interface PagedView <T> extends View {

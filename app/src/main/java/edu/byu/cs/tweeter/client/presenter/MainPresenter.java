@@ -12,15 +12,15 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
-import edu.byu.cs.tweeter.client.model.service.LogoutService;
 import edu.byu.cs.tweeter.client.model.service.PostStatusService;
 import edu.byu.cs.tweeter.client.model.service.UnfollowService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter extends Presenter implements LogoutService.LogoutObserver, FollowService.GetFollowersCountObserver, FollowService.GetFollowingCountObserver, FollowService.IsFollowerObserver, UnfollowService.UnfollowObserver, FollowService.FollowObserver, PostStatusService.PostStatusObserver {
+public class MainPresenter extends Presenter implements UserService.LogoutObserver, FollowService.GetFollowersCountObserver, FollowService.GetFollowingCountObserver, FollowService.IsFollowerObserver, UnfollowService.UnfollowObserver, FollowService.FollowObserver, PostStatusService.PostStatusObserver {
     private static final String LOG_TAG = "Main Presenter";
 
     private PostStatusService postStatusService;
@@ -33,7 +33,7 @@ public class MainPresenter extends Presenter implements LogoutService.LogoutObse
 
     public void logout(AuthToken authToken) {
         view.displayInfoMessage("Logging Out...");
-        new LogoutService().logout(authToken, this);
+        new UserService().logout(authToken, this);
     }
 
     public void getFollowersCount(AuthToken authToken, User selectedUser) {

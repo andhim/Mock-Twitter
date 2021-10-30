@@ -3,14 +3,12 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
-import edu.byu.cs.tweeter.client.model.service.GetFeedService;
 import edu.byu.cs.tweeter.client.model.service.GetPagedService;
-import edu.byu.cs.tweeter.client.model.service.GetUserService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowerPresenter extends PagedPresenter<User> implements FollowService.GetFollowersObserver, GetUserService.GetUserObserver {
+public class FollowerPresenter extends PagedPresenter<User> implements FollowService.GetFollowersObserver, UserService.GetUserObserver {
     //FollowerPresenter
     public FollowerPresenter(FollowerView view, AuthToken authToken, User targetUser) {
         super(view, targetUser, authToken);
