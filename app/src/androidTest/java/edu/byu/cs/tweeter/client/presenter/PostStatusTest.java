@@ -2,18 +2,14 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import static org.mockito.Mockito.times;
 
-import android.view.animation.AnimationSet;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import edu.byu.cs.tweeter.client.cache.Cache;
-import edu.byu.cs.tweeter.client.model.service.PostStatusService;
+import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -21,7 +17,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class PostStatusTest {
 
     private MainPresenter.MainView mockMainView;
-    private PostStatusService mockPostStatusService;
+    private StatusService mockStatusService;
     private AuthToken mockAuthToken;
 
     private MainPresenter mainPresenterSpy;
@@ -29,11 +25,11 @@ public class PostStatusTest {
     @Before
     public void setup() {
         mockMainView = Mockito.mock(MainPresenter.MainView.class);
-        mockPostStatusService = Mockito.mock(PostStatusService.class);
+        mockStatusService = Mockito.mock(StatusService.class);
         mockAuthToken = Mockito.mock(AuthToken.class);
 
         mainPresenterSpy = Mockito.spy(new MainPresenter(mockMainView));
-        Mockito.doReturn(mockPostStatusService).when(mainPresenterSpy).getPostStatusService();
+        Mockito.doReturn(mockStatusService).when(mainPresenterSpy).getStatusService();
     }
 
     @Test
@@ -45,7 +41,7 @@ public class PostStatusTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 Status status = invocation.getArgument(1);
-                PostStatusService.PostStatusObserver observer = invocation.getArgument(2);
+                StatusService.PostStatusObserver observer = invocation.getArgument(2);
 
                 Assert.assertEquals(invocation.getArgument(0), mockAuthToken);
                 Assert.assertEquals(status.post, post);
@@ -55,7 +51,7 @@ public class PostStatusTest {
             }
         };
 
-        Mockito.doAnswer(postStatusSucceededAnswer).when(mockPostStatusService).postStatus(Mockito.any(),Mockito.any(), Mockito.any());
+        Mockito.doAnswer(postStatusSucceededAnswer).when(mockStatusService).postStatus(Mockito.any(),Mockito.any(), Mockito.any());
 
         // Run the test case
         mainPresenterSpy.postStatus(mockAuthToken, post, new User());
@@ -76,7 +72,7 @@ public class PostStatusTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 Status status = invocation.getArgument(1);
-                PostStatusService.PostStatusObserver observer = invocation.getArgument(2);
+                StatusService.PostStatusObserver observer = invocation.getArgument(2);
 
                 Assert.assertEquals(invocation.getArgument(0), mockAuthToken);
                 Assert.assertEquals(status.post, post);
@@ -86,7 +82,7 @@ public class PostStatusTest {
             }
         };
 
-        Mockito.doAnswer(postStatusFailedAnswer).when(mockPostStatusService).postStatus(Mockito.any(),Mockito.any(), Mockito.any());
+        Mockito.doAnswer(postStatusFailedAnswer).when(mockStatusService).postStatus(Mockito.any(),Mockito.any(), Mockito.any());
 
         // Run the test case
         mainPresenterSpy.postStatus(mockAuthToken, post, new User());
@@ -103,7 +99,7 @@ public class PostStatusTest {
 
 
         //For parseURLs && parseMentions
-        Mockito.doThrow(new RuntimeException("exception")).when(mockPostStatusService).postStatus(Mockito.any(),Mockito.any(), Mockito.any());
+        Mockito.doThrow(new RuntimeException("exception")).when(mockStatusService).postStatus(Mockito.any(),Mockito.any(), Mockito.any());
         mainPresenterSpy.postStatus(mockAuthToken, post, new User());
         Mockito.verify(mockMainView).displayInfoMessage("Posting Status...");
         Mockito.verify(mockMainView).displayErrorMessage("Failed to post the status because of exception: exception");
@@ -112,7 +108,7 @@ public class PostStatusTest {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 Status status = invocation.getArgument(1);
-                PostStatusService.PostStatusObserver observer = invocation.getArgument(2);
+                StatusService.PostStatusObserver observer = invocation.getArgument(2);
 
                 Assert.assertEquals(invocation.getArgument(0), mockAuthToken);
                 Assert.assertEquals(status.post, post);
@@ -123,7 +119,7 @@ public class PostStatusTest {
             }
         };
 
-        Mockito.doAnswer(postStatusExceptionAnswer).when(mockPostStatusService).postStatus(Mockito.any(),Mockito.any(), Mockito.any());
+        Mockito.doAnswer(postStatusExceptionAnswer).when(mockStatusService).postStatus(Mockito.any(),Mockito.any(), Mockito.any());
 
         // Run the test case
         mainPresenterSpy.postStatus(mockAuthToken, post, new User());
