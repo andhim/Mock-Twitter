@@ -41,7 +41,7 @@ public class LoginTask extends AuthenticateTask {
             BackgroundTaskUtils.loadImage(user);
         }
 
-        return response.isSuccess();
+        return success;
     }
 
 }

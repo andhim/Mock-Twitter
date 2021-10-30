@@ -11,6 +11,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
+import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 
 public class UserService extends Service {
 
@@ -118,8 +119,9 @@ public class UserService extends Service {
     }
 
     public void register(String firstName, String lastName, String alias, String password, String imageBytesBase64, RegisterObserver observer) {
-        //Send register request.
-        execute(new RegisterTask(firstName, lastName, alias, password, imageBytesBase64, new RegisterHandler(observer)));
+        RegisterRequest request = new RegisterRequest(firstName, lastName, alias, password,imageBytesBase64);
+        //Send register request
+        execute(new RegisterTask(request, new RegisterHandler(observer)));
     }
 
     private class RegisterHandler extends BackgroundTaskHandler {

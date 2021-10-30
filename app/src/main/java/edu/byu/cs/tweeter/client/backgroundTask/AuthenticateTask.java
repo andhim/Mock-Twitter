@@ -5,6 +5,7 @@ import android.os.Handler;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.AuthenticateRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 
 public abstract class AuthenticateTask extends BackgroundTask{
@@ -31,18 +32,11 @@ public abstract class AuthenticateTask extends BackgroundTask{
     protected AuthToken authToken;
 
 
-    protected AuthenticateTask(LoginRequest request, Handler messageHandler) {
+    protected AuthenticateTask(AuthenticateRequest request, Handler messageHandler) {
         super(messageHandler);
 
         this.username = request.getUsername();
         this.password = request.getPassword();
-    }
-
-    protected AuthenticateTask(String userName, String password, Handler messageHandler) {
-        super(messageHandler);
-
-        this.username = userName;
-        this.password = password;
     }
 
     @Override
