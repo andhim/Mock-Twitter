@@ -1,7 +1,7 @@
 package edu.byu.cs.tweeter.server.service;
 
-import edu.byu.cs.tweeter.model.net.request.FollowersRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowersResponse;
+import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
+import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.server.dao.GetFollowersDAO;
 import edu.byu.cs.tweeter.server.dao.GetFollowingDAO;
 
@@ -19,7 +19,7 @@ public class GetFollowersService {
      * @param request contains the data required to fulfill the request.
      * @return the followers.
      */
-    public FollowersResponse getFollowers(FollowersRequest request) {
+    public GetFollowersResponse getFollowers(GetFollowersRequest request) {
         return getFollowersDAO().getFollowers(request); //noDao
     }
 

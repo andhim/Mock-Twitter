@@ -31,7 +31,7 @@ public class LoginPresenter extends AuthenticationPresenter implements LoginServ
         String message = validateLogin(alias, password);
         if (message == null) {
             ((LoginView) view).displayInfoMessage("Logging In...");
-            new LoginService(this).login(alias,password);
+            new LoginService().login(alias,password,this);
         } else {
             ((LoginView) view).displayErrorMessage("Login failed: " + message);
         }

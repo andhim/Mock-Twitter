@@ -5,6 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Contains utility methods for reading byte arrays.
@@ -17,9 +27,9 @@ public class ByteArrayUtils {
      * @param urlString the url where the bytes to be read reside.
      * @return the bytes.
      * @throws IOException if an I/O error occurs while attempting to open the URL or read from it's
-     * input stream.
+     *                     input stream.
      */
-    public static byte [] bytesFromUrl(String urlString) throws IOException {
+    public static byte[] bytesFromUrl(String urlString) throws IOException {
 
         URL url = new URL(urlString);
         HttpURLConnection connection = null;
@@ -35,7 +45,7 @@ public class ByteArrayUtils {
                 throw new IOException("Unable to read from url. Response code: " + connection.getResponseCode());
             }
         } finally {
-            if(connection != null) {
+            if (connection != null) {
                 connection.disconnect();
             }
         }
@@ -48,7 +58,7 @@ public class ByteArrayUtils {
      * @return the bytes.
      * @throws IOException if an I/O error occurs while attempting to read from the stream.
      */
-    public static byte [] bytesFromInputStream(InputStream inputStream) throws IOException {
+    public static byte[] bytesFromInputStream(InputStream inputStream) throws IOException {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
@@ -61,4 +71,5 @@ public class ByteArrayUtils {
         buffer.flush();
         return buffer.toByteArray();
     }
+
 }

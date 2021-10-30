@@ -3,11 +3,11 @@ package edu.byu.cs.tweeter.client.model.net;
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
-import edu.byu.cs.tweeter.model.net.request.FollowersRequest;
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
+import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowersResponse;
-import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
+import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 
 /**
@@ -18,7 +18,7 @@ public class ServerFacade {
 
     // TODO: Set this to the invoke URL of your API. Find it by going to your API in AWS, clicking
     //  on stages in the right-side menu, and clicking on the stage you deployed your API to.
-    private static final String SERVER_URL = "https://fswv8os1kg.execute-api.us-west-2.amazonaws.com/dev";
+    private static final String SERVER_URL = " https://bcnahnlat2.execute-api.us-west-2.amazonaws.com/dev";
 
     private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);
 
@@ -47,10 +47,10 @@ public class ServerFacade {
      *                other information required to satisfy the request.
      * @return the followees.
      */
-    public FollowingResponse getFollowees(FollowingRequest request, String urlPath)
+    public GetFollowingResponse getFollowees(GetFollowingRequest request, String urlPath)
             throws IOException, TweeterRemoteException {
 
-        FollowingResponse response = clientCommunicator.doPost(urlPath, request, null, FollowingResponse.class);
+        GetFollowingResponse response = clientCommunicator.doPost(urlPath, request, null, GetFollowingResponse.class);
 
         if(response.isSuccess()) {
             return response;
@@ -68,10 +68,10 @@ public class ServerFacade {
      *                other information required to satisfy the request.
      * @return the followers.
      */
-    public FollowersResponse getFollowers(FollowersRequest request, String urlPath)
+    public GetFollowersResponse getFollowers(GetFollowersRequest request, String urlPath)
             throws IOException, TweeterRemoteException {
 
-        FollowersResponse response = clientCommunicator.doPost(urlPath, request, null, FollowersResponse.class);
+        GetFollowersResponse response = clientCommunicator.doPost(urlPath, request, null, GetFollowersResponse.class);
 
         if(response.isSuccess()) {
             return response;
