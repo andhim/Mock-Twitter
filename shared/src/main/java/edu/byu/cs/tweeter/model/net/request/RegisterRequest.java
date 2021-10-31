@@ -4,12 +4,16 @@ public class RegisterRequest extends AuthenticateRequest {
     private String firstName;
     private String lastName;
     private String imageBytesBase64;
+    private String username;
+    private String password;
 
     private RegisterRequest() {}
 
     public RegisterRequest(String firstName, String lastName, String username, String password, String imageBytesBase64) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.username = username;
+        this.password = password;
         this.imageBytesBase64 = imageBytesBase64;
     }
 

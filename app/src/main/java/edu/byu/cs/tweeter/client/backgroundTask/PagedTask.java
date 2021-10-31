@@ -11,8 +11,8 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public abstract class PagedTask<T> extends AuthenticatedTask {
 
-    public static final String ITEMS_KEY = "items";
-    public static final String MORE_PAGES_KEY = "more-pages";
+    private static final String ITEMS_KEY = "items";
+    private static final String MORE_PAGES_KEY = "more-pages";
 
     /**
      * The user whose followers are being retrieved.
