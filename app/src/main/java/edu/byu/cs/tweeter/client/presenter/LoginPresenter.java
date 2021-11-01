@@ -38,15 +38,19 @@ public class LoginPresenter extends AuthenticationPresenter implements UserServi
     }
 
     private String validateLogin(String alias, String password) {
+        if (alias.length() == 0) {
+            return "Alias cannot be empty.";
+        }
+        if (password.length() == 0) {
+            return "Password cannot be empty.";
+        }
         if (alias.charAt(0) != '@') {
             return "Alias must begin with @.";
         }
         if (alias.length() < 2) {
             return "Alias must contain 1 or more characters after the @.";
         }
-        if (password.length() == 0) {
-            return "Password cannot be empty.";
-        }
+
         return null;
     }
 
