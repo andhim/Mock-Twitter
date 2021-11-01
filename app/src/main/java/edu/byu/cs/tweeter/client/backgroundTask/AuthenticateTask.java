@@ -15,14 +15,6 @@ public abstract class AuthenticateTask extends BackgroundTask{
     public static final String AUTH_TOKEN_KEY = "auth-token";
 
     /**
-     * The user's username (or "alias" or "handle"). E.g., "@susan".
-     */
-    private String username;
-    /**
-     * The user's password.
-     */
-    private String password;
-    /**
      * The logged-in user returned by the server
      */
     protected User user;
@@ -34,9 +26,6 @@ public abstract class AuthenticateTask extends BackgroundTask{
 
     protected AuthenticateTask(AuthenticateRequest request, Handler messageHandler) {
         super(messageHandler);
-
-        this.username = request.getUsername();
-        this.password = request.getPassword();
     }
 
     @Override

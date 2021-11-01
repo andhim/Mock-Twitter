@@ -12,6 +12,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 
 public class FollowService extends GetPagedService<User>{
     //MainActivity - Follow
@@ -78,7 +79,14 @@ public class FollowService extends GetPagedService<User>{
                              int limit,
                              User lastFollowee,
                              GetFollowingObserver observer) {
-        execute(new GetFollowingTask(authToken, targetUser, limit, lastFollowee, new GetFollowingHandler(observer)));
+        GetFollowingRequest request = null;
+        if (lastFollowee != null) {
+            request = new GetFollowingRequest(authToken, targetUser.getAlias(), limit, lastFollowee.getAlias());
+        } else {
+            request = new GetFollowingRequest(authToken, targetUser.getAlias(), limit, null);
+        }
+
+        execute(new GetFollowingTask(request, new GetFollowingHandler(observer)));
     }
 
     private class GetFollowingHandler extends BackgroundTaskHandler {
