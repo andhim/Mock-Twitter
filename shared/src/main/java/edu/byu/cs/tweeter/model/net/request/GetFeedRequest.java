@@ -4,15 +4,15 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFeedTask extends AuthenticatedRequest{
+public class GetFeedRequest extends AuthenticatedRequest{
 
     private User user;
     private int limit;
     private Status lastStatus;
 
-    private GetFeedTask() {}
+    private GetFeedRequest() {}
 
-    public GetFeedTask(AuthToken authToken, User user, int limit, Status lastStatus) {
+    public GetFeedRequest(AuthToken authToken, User user, int limit, Status lastStatus) {
         this.authToken = authToken;
         this.user = user;
         this.limit = limit;

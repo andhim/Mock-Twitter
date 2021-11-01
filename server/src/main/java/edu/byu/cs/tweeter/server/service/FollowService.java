@@ -21,7 +21,15 @@ public class FollowService {
      * @return the followees.
      */
     public GetFollowingResponse getFollowees(GetFollowingRequest request) {
-        return getFollowDAO().getFollowees(request); //noDao
+        if (request == null || request.getFollowerAlias() == null || request.getAuthToken() == null) {
+            throw new RuntimeException("[BadRequest] Invalid request");
+        }
+
+        try {
+            return getFollowDAO().getFollowees(request);
+        } catch(Exception ex) {
+            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+        }
     }
 
     /**
@@ -34,7 +42,15 @@ public class FollowService {
      * @return the followers.
      */
     public GetFollowersResponse getFollowers(GetFollowersRequest request) {
-        return getFollowDAO().getFollowers(request); //noDao
+        if (request == null || request.getFolloweeAlias() == null || request.getAuthToken() == null) {
+            throw new RuntimeException("[BadRequest] Invalid request" );
+        }
+
+        try {
+            return getFollowDAO().getFollowers(request); //noDao
+        } catch(Exception ex) {
+            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+        }
     }
 
     /**
