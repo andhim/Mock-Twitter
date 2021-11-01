@@ -12,6 +12,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 
 public class FollowService extends GetPagedService<User>{
@@ -99,7 +100,7 @@ public class FollowService extends GetPagedService<User>{
 
         @Override
         protected void handleSuccess(Message msg) {
-            getItems(msg, (GetPagedService.GetItemObserver) this.observer);
+            getItems(msg, (GetItemObserver) this.observer);
         }
 
         @Override
@@ -113,7 +114,14 @@ public class FollowService extends GetPagedService<User>{
     }
 
     public void getFollowers(AuthToken authToken, User targetUser, int limit, User lastFollower, GetFollowersObserver observer) {
-        execute(new GetFollowersTask(authToken,targetUser, limit, lastFollower, new GetFollowersHandler(observer)));
+        GetFollowersRequest request = null;
+        if (lastFollower != null) {
+            request = new GetFollowersRequest(authToken ,targetUser.getAlias(), limit, lastFollower.getAlias());
+        } else {
+            request = new GetFollowersRequest(authToken ,targetUser.getAlias(), limit, null);
+        }
+
+        execute(new GetFollowersTask(request, new GetFollowersHandler(observer)));
     }
 
     private class GetFollowersHandler extends BackgroundTaskHandler {

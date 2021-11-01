@@ -9,10 +9,15 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.client.util.ByteArrayUtils;
 import edu.byu.cs.tweeter.client.util.Pair;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
+import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
+import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 
 
 /**
@@ -20,22 +25,28 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class GetFollowersTask extends PagedTask<User> {
     private static final String LOG_TAG = "GetFollowersTask";
+    static final String URL_PATH = "/getfollowers";
+    private final GetFollowersRequest request;
+    private ServerFacade serverFacade;
 
-    public GetFollowersTask(AuthToken authToken, User targetUser, int limit, User lastFollower,
+
+    public GetFollowersTask(GetFollowersRequest request,
                             Handler messageHandler) {
-        super(authToken, targetUser, limit, lastFollower, messageHandler);
+        super(request, messageHandler);
+        this.request = request;
+        this.serverFacade = new ServerFacade();
     }
 
     @Override
-    protected boolean runTask() throws IOException {
-        Pair<List<User>, Boolean> pageOfUsers = getFakeData().getPageOfUsers(lastItem, limit, targetUser);
-        this.items = pageOfUsers.getFirst();
-        this.hasMorePages = pageOfUsers.getSecond();
-
-        for (User u : items) {
-            BackgroundTaskUtils.loadImage(u);
+    protected boolean runTask() throws IOException, TweeterRemoteException {
+        GetFollowersResponse response = serverFacade.getFollowers(request, URL_PATH);
+        boolean success = response.isSuccess();
+        if (success) {
+            this.items  = response.getFollowers();
+            this.hasMorePages = response.getHasMorePages();
+            loadImages(items);
         }
 
-        return true;
+        return success;
     }
 }
