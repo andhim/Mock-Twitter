@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
-import edu.byu.cs.tweeter.server.service.GetFollowersService;
+import edu.byu.cs.tweeter.server.service.FollowService;
 
 /**
  * An AWS lambda function that returns the users a user is followed by.
@@ -23,7 +23,7 @@ public class GetFollowersHandler implements RequestHandler<GetFollowersRequest, 
      */
     @Override
     public GetFollowersResponse handleRequest(GetFollowersRequest request, Context context) {
-        GetFollowersService service = new GetFollowersService();
+        FollowService service = new FollowService();
         return service.getFollowers(request);
     }
 }

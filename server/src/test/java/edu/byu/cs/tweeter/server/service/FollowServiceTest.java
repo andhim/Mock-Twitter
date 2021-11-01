@@ -11,14 +11,14 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
-import edu.byu.cs.tweeter.server.dao.GetFollowingDAO;
+import edu.byu.cs.tweeter.server.dao.FollowDAO;
 
-public class GetFollowingServiceTest {
+public class FollowServiceTest {
 
     private GetFollowingRequest request;
     private GetFollowingResponse expectedResponse;
-    private GetFollowingDAO mockGetFollowingDAO;
-    private GetFollowingService getFollowingServiceSpy;
+    private FollowDAO mockFollowDAO;
+    private FollowService followServiceSpy;
 
     @BeforeEach
     public void setup() {
@@ -38,20 +38,20 @@ public class GetFollowingServiceTest {
 
         // Setup a mock FollowDAO that will return known responses
         expectedResponse = new GetFollowingResponse(Arrays.asList(resultUser1, resultUser2, resultUser3), false);
-        mockGetFollowingDAO = Mockito.mock(GetFollowingDAO.class);
-        Mockito.when(mockGetFollowingDAO.getFollowees(request)).thenReturn(expectedResponse);
+        mockFollowDAO = Mockito.mock(FollowDAO.class);
+        Mockito.when(mockFollowDAO.getFollowees(request)).thenReturn(expectedResponse);
 
-        getFollowingServiceSpy = Mockito.spy(GetFollowingService.class);
-        Mockito.when(getFollowingServiceSpy.getFollowingDAO()).thenReturn(mockGetFollowingDAO);
+        followServiceSpy = Mockito.spy(FollowService.class);
+        Mockito.when(followServiceSpy.getFollowDAO()).thenReturn(mockFollowDAO);
     }
 
     /**
-     * Verify that the {@link GetFollowingService#getFollowees(GetFollowingRequest)}
-     * method returns the same result as the {@link GetFollowingDAO} class.
+     * Verify that the {@link FollowService#getFollowees(GetFollowingRequest)}
+     * method returns the same result as the {@link FollowDAO} class.
      */
     @Test
     public void testGetFollowees_validRequest_correctResponse() {
-        GetFollowingResponse response = getFollowingServiceSpy.getFollowees(request);
+        GetFollowingResponse response = followServiceSpy.getFollowees(request);
         Assertions.assertEquals(expectedResponse, response);
     }
 }
