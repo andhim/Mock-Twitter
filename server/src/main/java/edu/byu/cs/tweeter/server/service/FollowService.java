@@ -21,7 +21,7 @@ public class FollowService {
      * @return the followees.
      */
     public GetFollowingResponse getFollowees(GetFollowingRequest request) {
-        if (request == null || request.getFollowerAlias() == null || request.getAuthToken() == null) {
+        if (request == null || request.getFollowerAlias() == null || request.getAuthToken() == null || request.getLimit() <= 0) {
             throw new RuntimeException("[BadRequest] Invalid request");
         }
 
@@ -42,7 +42,7 @@ public class FollowService {
      * @return the followers.
      */
     public GetFollowersResponse getFollowers(GetFollowersRequest request) {
-        if (request == null || request.getFolloweeAlias() == null || request.getAuthToken() == null) {
+        if (request == null || request.getFolloweeAlias() == null || request.getAuthToken() == null || request.getLimit() <= 0) {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
 

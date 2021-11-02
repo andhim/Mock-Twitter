@@ -4,26 +4,26 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetStoryTask extends AuthenticatedRequest{
-    private User user;
+public class GetStoryRequest extends AuthenticatedRequest{
+    private String userAlias;
     private int limit;
     private Status lastStatus;
 
-    private GetStoryTask() {}
+    private GetStoryRequest() {}
 
-    public GetStoryTask(AuthToken authToken, User user, int limit, Status lastStatus) {
+    public GetStoryRequest(AuthToken authToken, String userAlias, int limit, Status lastStatus) {
         this.authToken = authToken;
-        this.user = user;
+        this.userAlias = userAlias;
         this.limit = limit;
         this.lastStatus = lastStatus;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserAlias() {
+        return userAlias;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserAlias(String userAlias) {
+        this.userAlias = userAlias;
     }
 
     public int getLimit() {

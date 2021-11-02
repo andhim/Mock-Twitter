@@ -3,12 +3,12 @@ package edu.byu.cs.tweeter.model.net.request;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 
-public class PostStatusTask extends AuthenticatedRequest{
+public class PostStatusRequest extends AuthenticatedRequest{
     private Status newStatus;
 
-    private PostStatusTask() {}
+    private PostStatusRequest() {}
 
-    public PostStatusTask(AuthToken authToken, Status newStatus) {
+    public PostStatusRequest(AuthToken authToken, Status newStatus) {
         this.authToken = authToken;
         this.newStatus = newStatus;
     }
