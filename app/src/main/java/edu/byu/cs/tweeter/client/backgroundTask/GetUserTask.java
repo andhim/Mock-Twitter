@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.io.IOException;
+
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -29,8 +31,9 @@ public class GetUserTask extends AuthenticatedTask {
     }
 
     @Override
-    public boolean runTask() {
+    public boolean runTask() throws IOException {
         this.user = getFakeData().findUserByAlias(alias);
+        BackgroundTaskUtils.loadImage(user);
         return true;
     }
 

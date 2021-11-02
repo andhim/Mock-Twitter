@@ -1,7 +1,9 @@
 package edu.byu.cs.tweeter.server.service;
 
+import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
@@ -48,6 +50,17 @@ public class FollowService {
 
         try {
             return getFollowDAO().getFollowers(request); //noDao
+        } catch(Exception ex) {
+            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+        }
+    }
+
+    public FollowResponse follow(FollowRequest request) {
+        if (request == null || request.getAuthToken() != null) {
+            throw new RuntimeException("[BadRequest] Invalid request" );
+        }
+        try {
+            return getFollowDAO().follow(request); //noDao
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }

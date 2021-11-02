@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.server.util.FakeData;
@@ -39,6 +41,10 @@ public class FollowDAO {
         // TODO: uses the dummy data.  Replace with a real implementation.
         assert followee != null;
         return getDummyFollowers().size();
+    }
+
+    public FollowResponse follow(FollowRequest request) {
+        return new FollowResponse();
     }
 
     /**

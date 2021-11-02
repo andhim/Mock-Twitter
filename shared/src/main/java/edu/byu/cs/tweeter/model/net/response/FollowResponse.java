@@ -2,11 +2,11 @@ package edu.byu.cs.tweeter.model.net.response;
 
 public class FollowResponse extends Response{
 
-    FollowResponse() {
+    public FollowResponse() {
         super(true);
     }
 
-    FollowResponse(String message) {
+    public FollowResponse(String message) {
         super(false, message);
     }
 }
