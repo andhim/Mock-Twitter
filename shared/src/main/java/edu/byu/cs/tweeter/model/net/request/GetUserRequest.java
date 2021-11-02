@@ -9,7 +9,7 @@ public class GetUserRequest extends AuthenticatedRequest{
 
     public GetUserRequest(AuthToken authToken, String alias) {
         this.alias = alias;
-        this.authToken = getAuthToken();
+        this.authToken = authToken;
     }
 
     public String getAlias() {

@@ -5,12 +5,12 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class GetUserResponse extends Response{
     User user;
 
-    GetUserResponse(User user) {
+    public GetUserResponse(User user) {
         super(true);
         this.user = user;
     }
 
-    GetUserResponse(String message) {
+    public GetUserResponse(String message) {
         super(false, message);
     }
 

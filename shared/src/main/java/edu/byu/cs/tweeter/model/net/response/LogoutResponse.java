@@ -1,11 +1,11 @@
 package edu.byu.cs.tweeter.model.net.response;
 
 public class LogoutResponse extends Response {
-    LogoutResponse() {
+    public LogoutResponse() {
         super(true);
     }
 
-    LogoutResponse(String message) {
+    public LogoutResponse(String message) {
         super(false, message);
     }
 }
