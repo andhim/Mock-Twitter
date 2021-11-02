@@ -54,9 +54,9 @@ public class UserService extends Service {
 
     public void login(String alias, String password, LoginObserver observer) {
         //Run a LoginTask to login the user
-        LoginRequest request = new LoginRequest(alias, password);
 
-        execute(new LoginTask(request, new LoginHandler(observer)));
+
+        execute(new LoginTask(alias, password, new LoginHandler(observer)));
     }
 
     /**
@@ -121,7 +121,7 @@ public class UserService extends Service {
     public void register(String firstName, String lastName, String alias, String password, String imageBytesBase64, RegisterObserver observer) {
         RegisterRequest request = new RegisterRequest(firstName, lastName, alias, password,imageBytesBase64);
         //Send register request
-        execute(new RegisterTask(request, new RegisterHandler(observer)));
+        execute(new RegisterTask(firstName, lastName, alias, password, imageBytesBase64, new RegisterHandler(observer)));
     }
 
     private class RegisterHandler extends BackgroundTaskHandler {

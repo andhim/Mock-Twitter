@@ -1,18 +1,12 @@
 package edu.byu.cs.tweeter.client.backgroundTask;
 
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
-import edu.byu.cs.tweeter.client.util.Pair;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
-import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 
@@ -39,13 +33,11 @@ public class RegisterTask extends AuthenticateTask {
      */
     private String image;
 
-    public RegisterTask(RegisterRequest request, Handler messageHandler) {
-        super(request, messageHandler);
-        this.firstName = request.getFirstName();
-        this.lastName = request.getLastName();
-        this.image = request.getImageBytesBase64();
-        this.request = request;
-        this.serverFacade = new ServerFacade();
+    public RegisterTask(String firstName, String lastName, String username, String password, String image, Handler messageHandler) {
+        super(username, password, messageHandler);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.image = image;
     }
 
     @Override
@@ -54,7 +46,8 @@ public class RegisterTask extends AuthenticateTask {
     }
 
     private boolean doRegister() throws IOException, TweeterRemoteException {
-        RegisterResponse response = serverFacade.register(request, URL_PATH);
+        RegisterRequest request = new RegisterRequest(firstName, lastName, username, password, image);
+        RegisterResponse response = Cache.getInstance().getServerFacade().register(request, URL_PATH);
         boolean success = response.isSuccess();
         if (success) {
             this.user = response.getUser();

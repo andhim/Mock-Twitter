@@ -1,12 +1,16 @@
 package edu.byu.cs.tweeter.server.service;
 
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
+import edu.byu.cs.tweeter.model.net.request.GetFollowersCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
+import edu.byu.cs.tweeter.model.net.request.GetFollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
+import edu.byu.cs.tweeter.model.net.response.GetFollowersCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
+import edu.byu.cs.tweeter.model.net.response.GetFollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
@@ -87,6 +91,28 @@ public class FollowService {
         }
         try {
             return getFollowDAO().isFollower(request);
+        } catch(Exception ex) {
+            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+        }
+    }
+
+    public GetFollowersCountResponse getFollowersCount(GetFollowersCountRequest request) {
+        if (request == null || request.getAuthToken() == null || request.getSelectedUserAlias() == null) {
+            throw new RuntimeException("[BadRequest] Invalid request" );
+        }
+        try {
+            return getFollowDAO().getFollowersCount(request);
+        } catch(Exception ex) {
+            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+        }
+    }
+
+    public GetFollowingCountResponse getFollowingCount(GetFollowingCountRequest request) {
+        if (request == null || request.getAuthToken() == null || request.getSelectedUserAlias() == null) {
+            throw new RuntimeException("[BadRequest] Invalid request" );
+        }
+        try {
+            return getFollowDAO().getFollowingCount(request);
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }

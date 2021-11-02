@@ -1,9 +1,6 @@
 package edu.byu.cs.tweeter.client.backgroundTask;
 
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
 
@@ -11,9 +8,7 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
-import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 
 /**

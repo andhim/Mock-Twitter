@@ -2,11 +2,8 @@ package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
-import java.util.Random;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;

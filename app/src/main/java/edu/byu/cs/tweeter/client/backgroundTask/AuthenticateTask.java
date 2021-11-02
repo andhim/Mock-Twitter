@@ -6,7 +6,6 @@ import android.os.Handler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.AuthenticateRequest;
-import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 
 public abstract class AuthenticateTask extends BackgroundTask{
     private static final String LOG_TAG = "AuthenticateTask";
@@ -22,10 +21,14 @@ public abstract class AuthenticateTask extends BackgroundTask{
      * Auth token for logged-in user.
      */
     protected AuthToken authToken;
+    protected String username;
+    protected String password;
 
 
-    protected AuthenticateTask(AuthenticateRequest request, Handler messageHandler) {
+    protected AuthenticateTask(String username, String password, Handler messageHandler) {
         super(messageHandler);
+        this.username = username;
+        this.password = password;
     }
 
     @Override

@@ -4,9 +4,6 @@ import android.os.Message;
 
 import java.util.List;
 
-import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
-import edu.byu.cs.tweeter.client.backgroundTask.PagedTask;
-
 public abstract class GetPagedService <T> extends Service{
     private static final String ITEMS_KEY = "items";
     private static final String MORE_PAGES_KEY = "more-pages";
