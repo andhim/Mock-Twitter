@@ -6,25 +6,25 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class GetFeedRequest extends AuthenticatedRequest{
 
-    private User user;
+    private String userAlias;
     private int limit;
     private Status lastStatus;
 
     private GetFeedRequest() {}
 
-    public GetFeedRequest(AuthToken authToken, User user, int limit, Status lastStatus) {
+    public GetFeedRequest(AuthToken authToken, String userAlias, int limit, Status lastStatus) {
         this.authToken = authToken;
-        this.user = user;
+        this.userAlias = userAlias;
         this.limit = limit;
         this.lastStatus = lastStatus;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserAlias() {
+        return userAlias;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserAlias(String userAlias) {
+        this.userAlias = userAlias;
     }
 
     public int getLimit() {

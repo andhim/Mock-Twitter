@@ -4,30 +4,30 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class IsFollowerRequest extends AuthenticatedRequest{
-    private User currUser;
-    private User selectedUser;
+    private String currUserAlias;
+    private String selectedUserAlias;
 
     private IsFollowerRequest() {}
 
-    public IsFollowerRequest(AuthToken authToken, User currUser, User selectedUser) {
+    public IsFollowerRequest(AuthToken authToken, String currUserAlias, String selectedUserAlias) {
         this.authToken = authToken;
-        this.currUser = currUser;
-        this.selectedUser = selectedUser;
+        this.currUserAlias = currUserAlias;
+        this.selectedUserAlias = selectedUserAlias;
     }
 
-    public User getCurrUser() {
-        return currUser;
+    public String getCurrUserAlias() {
+        return currUserAlias;
     }
 
-    public void setCurrUser(User currUser) {
-        this.currUser = currUser;
+    public void setCurrUserAlias(String currUserAlias) {
+        this.currUserAlias = currUserAlias;
     }
 
-    public User getSelectedUser() {
-        return selectedUser;
+    public String getSelectedUserAlias() {
+        return selectedUserAlias;
     }
 
-    public void setSelectedUser(User selectedUser) {
-        this.selectedUser = selectedUser;
+    public void setSelectedUserAlias(String selectedUserAlias) {
+        this.selectedUserAlias = selectedUserAlias;
     }
 }

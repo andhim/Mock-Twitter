@@ -4,20 +4,20 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UnfollowRequest extends AuthenticatedRequest {
-    private User selectedUser;
+    private String selectedUserAlias;
 
     private UnfollowRequest() {}
 
-    public UnfollowRequest(AuthToken authToken, User selectedUser) {
+    public UnfollowRequest(AuthToken authToken, String selectedUserAlias) {
         this.authToken = authToken;
-        this.selectedUser = selectedUser;
+        this.selectedUserAlias = selectedUserAlias;
     }
 
-    public User getSelectedUser() {
-        return selectedUser;
+    public String getSelectedUserAlias() {
+        return selectedUserAlias;
     }
 
-    public void setSelectedUser(User selectedUser) {
-        this.selectedUser = selectedUser;
+    public void setSelectedUserAlias(String selectedUserAlias) {
+        this.selectedUserAlias = selectedUserAlias;
     }
 }

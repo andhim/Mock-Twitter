@@ -4,8 +4,6 @@ public class RegisterRequest extends AuthenticateRequest {
     private String firstName;
     private String lastName;
     private String imageBytesBase64;
-    private String username;
-    private String password;
 
     private RegisterRequest() {}
 

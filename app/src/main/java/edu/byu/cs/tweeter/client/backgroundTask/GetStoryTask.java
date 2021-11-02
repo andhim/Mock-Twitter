@@ -10,10 +10,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.util.Pair;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.request.GetFeedRequest;
+import edu.byu.cs.tweeter.model.net.request.GetStoryRequest;
+import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
+import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 
 
 /**
@@ -21,6 +27,7 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class GetStoryTask extends PagedTask<Status> {
     private static final String LOG_TAG = "GetStoryTask";
+    static final String URL_PATH = "/getstory";
 
     public GetStoryTask(AuthToken authToken, User targetUser, int limit, Status lastStatus,
                         Handler messageHandler) {
@@ -28,15 +35,17 @@ public class GetStoryTask extends PagedTask<Status> {
     }
 
     @Override
-    protected boolean runTask() throws IOException {
-        Pair<List<Status>, Boolean> pageOfStatus = getFakeData().getPageOfStatus(lastItem, limit);
-        this.items = pageOfStatus.getFirst();
-        this.hasMorePages = pageOfStatus.getSecond();
-
-        for (Status s : items) {
-            BackgroundTaskUtils.loadImage(s.getUser());
+    protected boolean runTask() throws IOException, TweeterRemoteException {
+        GetStoryRequest request = new GetStoryRequest(authToken, targetUser.getAlias(), limit, lastItem);
+        GetStoryResponse response = Cache.getInstance().getServerFacade().getStory(request, URL_PATH);
+        boolean success = response.isSuccess();
+        if (success) {
+            this.items = response.getStories();
+            this.hasMorePages = response.getHasMorePages();
+            for (Status s : items) {
+                BackgroundTaskUtils.loadImage(s.getUser());
+            }
         }
-
-        return true;
+        return success;
     }
 }

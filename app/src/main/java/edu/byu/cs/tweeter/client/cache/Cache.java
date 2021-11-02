@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.cache;
 
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -21,6 +22,8 @@ public class Cache {
      * The auth token for the current user session.
      */
     private AuthToken currUserAuthToken;
+
+    private ServerFacade serverFacade;
 
     private Cache() {
         initialize();
@@ -49,6 +52,13 @@ public class Cache {
 
     public void setCurrUserAuthToken(AuthToken currUserAuthToken) {
         this.currUserAuthToken = currUserAuthToken;
+    }
+
+    public ServerFacade getServerFacade() {
+        if (serverFacade == null) {
+            serverFacade = new ServerFacade();
+        }
+        return serverFacade;
     }
 
     /**

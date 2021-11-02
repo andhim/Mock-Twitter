@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.AuthenticatedRequest;
 
@@ -67,4 +68,5 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
             BackgroundTaskUtils.loadImage(u);
         }
     }
+
 }
