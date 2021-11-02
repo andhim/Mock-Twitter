@@ -3,9 +3,13 @@ package edu.byu.cs.tweeter.server.service;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
+import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
+import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
 
 /**
@@ -56,11 +60,33 @@ public class FollowService {
     }
 
     public FollowResponse follow(FollowRequest request) {
-        if (request == null || request.getAuthToken() != null) {
+        if (request == null || request.getAuthToken() == null || request.getSelectedUserAlias() == null) {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return getFollowDAO().follow(request); //noDao
+            return getFollowDAO().follow(request);
+        } catch(Exception ex) {
+            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+        }
+    }
+
+    public UnfollowResponse unfollow(UnfollowRequest request) {
+        if (request == null || request.getAuthToken() == null || request.getSelectedUserAlias() == null) {
+            throw new RuntimeException("[BadRequest] Invalid request" );
+        }
+        try {
+            return getFollowDAO().unfollow(request);
+        } catch(Exception ex) {
+            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+        }
+    }
+
+    public IsFollowerResponse isFolloweer(IsFollowerRequest request) {
+        if (request == null || request.getAuthToken() == null || request.getCurrUserAlias() == null || request.getSelectedUserAlias() == null) {
+            throw new RuntimeException("[BadRequest] Invalid request" );
+        }
+        try {
+            return getFollowDAO().isFollower(request);
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }
