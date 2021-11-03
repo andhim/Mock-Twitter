@@ -19,6 +19,13 @@ import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 public class GetStoryTask extends PagedTask<Status> {
     private static final String LOG_TAG = "GetStoryTask";
     static final String URL_PATH = "/getstory";
+    private GetStoryRequest request;
+
+    //For Teting
+    public GetStoryTask(GetStoryRequest request, Handler messageHandler) {
+        super(request, messageHandler);
+        this.request = request;
+    }
 
     public GetStoryTask(AuthToken authToken, User targetUser, int limit, Status lastStatus,
                         Handler messageHandler) {

@@ -15,14 +15,9 @@ public abstract class AuthenticatedTask extends BackgroundTask{
      */
     protected AuthToken authToken;
 
-    //TODO: Erase
     protected AuthenticatedTask(AuthToken authToken, Handler messageHandler) {
         super(messageHandler);
         this.authToken = authToken;
     }
 
-    protected AuthenticatedTask(AuthenticatedRequest request, Handler messageHandler) {
-        super(messageHandler);
-        this.authToken = request.getAuthToken();
-    }
 }

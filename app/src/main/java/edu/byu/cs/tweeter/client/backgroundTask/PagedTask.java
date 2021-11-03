@@ -42,7 +42,6 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
      */
     protected boolean hasMorePages;
 
-    //TODO: Erase
     protected PagedTask(AuthToken authToken, User targetUser, int limit, T lastItem, Handler messageHandler) {
         super(authToken, messageHandler);
 
@@ -51,9 +50,9 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
         this.lastItem = lastItem;
     }
 
-
+    //For Testing
     protected PagedTask(AuthenticatedRequest request, Handler messageHandler) {
-        super(request, messageHandler);
+        super(request.getAuthToken(), messageHandler);
     }
 
     @Override
