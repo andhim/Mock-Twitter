@@ -1,12 +1,12 @@
 package edu.byu.cs.tweeter.client.backgroundTask.handler;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
 
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTask;
-import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.model.service.ServiceObserver;
 import edu.byu.cs.tweeter.client.model.service.ServiceOperationObserver;
 
@@ -15,6 +15,7 @@ public abstract class BackgroundTaskHandler <T extends ServiceObserver> extends 
     protected T observer;
 
     protected BackgroundTaskHandler(T observer) {
+        super(Looper.getMainLooper());
         this.observer = observer;
     }
 

@@ -1,16 +1,15 @@
 package edu.byu.cs.tweeter.client.backgroundTask;
 
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
 
-import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.util.FakeData;
-import edu.byu.cs.tweeter.util.Pair;
+import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.request.LoginRequest;
+import edu.byu.cs.tweeter.model.net.response.LoginResponse;
+
 
 /**
  * Background task that logs in a user (i.e., starts a session).
@@ -18,21 +17,24 @@ import edu.byu.cs.tweeter.util.Pair;
 public class LoginTask extends AuthenticateTask {
 
     private static final String LOG_TAG = "LoginTask";
+    private final String URL_PATH = "/login";
 
     public LoginTask(String username, String password, Handler messageHandler) {
         super(username, password, messageHandler);
-
-        return;
     }
 
     @Override
-    public boolean runTask() throws IOException {
-        this.user = getFakeData().getFirstUser();
-        this.authToken = getFakeData().getAuthToken();
+    public boolean runTask() throws IOException, TweeterRemoteException {
+        LoginRequest request = new LoginRequest(username, password);
+        LoginResponse response = Cache.getInstance().getServerFacade().login(request, URL_PATH);
+        boolean success = response.isSuccess();
+        if (success) {
+            user = response.getUser();
+            authToken = response.getAuthToken();
+            BackgroundTaskUtils.loadImage(user);
+        }
 
-        BackgroundTaskUtils.loadImage(user);
-
-        return true;
+        return success;
     }
 
 }

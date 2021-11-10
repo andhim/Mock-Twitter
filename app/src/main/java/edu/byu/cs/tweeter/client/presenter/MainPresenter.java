@@ -10,43 +10,44 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
-import edu.byu.cs.tweeter.client.model.service.GetFollowersCountService;
-import edu.byu.cs.tweeter.client.model.service.GetFollowingCountService;
-import edu.byu.cs.tweeter.client.model.service.IsFollowerService;
-import edu.byu.cs.tweeter.client.model.service.LogoutService;
-import edu.byu.cs.tweeter.client.model.service.PostStatusService;
-import edu.byu.cs.tweeter.client.model.service.UnfollowService;
+import edu.byu.cs.tweeter.client.model.service.StatusService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter extends Presenter implements LogoutService.LogoutObserver, GetFollowersCountService.GetFollowersCountObserver, GetFollowingCountService.GetFollowingCountObserver, IsFollowerService.IsFollowerObserver, UnfollowService.UnfollowObserver, FollowService.FollowObserver, PostStatusService.PostStatusObserver {
+public class MainPresenter extends Presenter implements UserService.LogoutObserver, FollowService.GetFollowersCountObserver, FollowService.GetFollowingCountObserver, FollowService.IsFollowerObserver, FollowService.UnfollowObserver, FollowService.FollowObserver, StatusService.PostStatusObserver {
     private static final String LOG_TAG = "Main Presenter";
+
+    private StatusService statusService;
 
     public MainPresenter(MainView view) {
         super(view);
+        this.statusService = getStatusService();
+        //TODO: other services
     }
 
     public void logout(AuthToken authToken) {
         view.displayInfoMessage("Logging Out...");
-        new LogoutService().logout(authToken, this);
+        new UserService().logout(authToken, this);
     }
 
     public void getFollowersCount(AuthToken authToken, User selectedUser) {
-        new GetFollowersCountService().getFollowersCount(authToken, selectedUser, this);
+        new FollowService().getFollowersCount(authToken, selectedUser, this);
     }
 
     public void getFollowingCount(AuthToken authToken, User selectedUser) {
-        new GetFollowingCountService().getFollowingCount(authToken, selectedUser, this);
+        new FollowService().getFollowingCount(authToken, selectedUser, this);
     }
 
     public void isFollower(AuthToken authToken, User currUser, User selectedUser) {
-        new IsFollowerService().isFollower(authToken, currUser, selectedUser, this);
+        new FollowService().isFollower(authToken, currUser, selectedUser, this);
     }
 
     public void unfollow(AuthToken authToken, User selectedUser) {
-        new UnfollowService().unfollow(authToken, selectedUser, this);
+        new FollowService().unfollow(authToken, selectedUser, this);
     }
 
     public void follow(AuthToken authToken, User selectedUser) {
@@ -56,13 +57,20 @@ public class MainPresenter extends Presenter implements LogoutService.LogoutObse
     //postStatus
     public void postStatus(AuthToken authToken, String post, User currUser)  {
         try {
-            view.displayInfoMessage("Pending Status...");
+            view.displayInfoMessage("Posting Status...");
             Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
-            new PostStatusService().postStatus(authToken, newStatus, this);
+            getStatusService().postStatus(authToken, newStatus, this);
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
             view.displayErrorMessage("Failed to post the status because of exception: " + ex.getMessage());
         }
+    }
+
+    public StatusService getStatusService() {
+        if (statusService == null) {
+            return new StatusService();
+        }
+        return statusService;
     }
 
     private String getFormattedDateTime() throws ParseException {
@@ -158,6 +166,8 @@ public class MainPresenter extends Presenter implements LogoutService.LogoutObse
     //Logout
     @Override
     public void logoutSucceeded() {
+        //Clear user data (cached data).
+        Cache.getInstance().clearCache();
         ((MainView) view).logoutUser();
     }
 

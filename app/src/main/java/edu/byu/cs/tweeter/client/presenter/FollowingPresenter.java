@@ -3,14 +3,12 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.FollowService;
-import edu.byu.cs.tweeter.client.model.service.GetFollowersService;
-import edu.byu.cs.tweeter.client.model.service.GetFollowingService;
 import edu.byu.cs.tweeter.client.model.service.GetPagedService;
-import edu.byu.cs.tweeter.client.model.service.GetUserService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter extends PagedPresenter<User> implements GetFollowingService.GetFollowingObserver, GetUserService.GetUserObserver {
+public class FollowingPresenter extends PagedPresenter<User> implements FollowService.GetFollowingObserver, UserService.GetUserObserver {
     //FollowingPresenter
     public FollowingPresenter(FollowingView view, AuthToken authToken, User targetUser) {
         super(view, targetUser, authToken);
@@ -49,7 +47,7 @@ public class FollowingPresenter extends PagedPresenter<User> implements GetFollo
 
     @Override
     public void getItems(AuthToken authToken, User user, int limit, User lastItem, GetPagedService.GetItemObserver observer) {
-        new GetFollowingService().getFollowing(authToken, user, limit, lastItem, this);
+        new FollowService().getFollowing(authToken, user, limit, lastItem, this);
     }
 
     //View Interface

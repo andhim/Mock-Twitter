@@ -3,16 +3,18 @@ package edu.byu.cs.tweeter.client.backgroundTask;
 import android.os.Bundle;
 import android.os.Handler;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.AuthenticatedRequest;
 
 public abstract class PagedTask<T> extends AuthenticatedTask {
 
-    public static final String ITEMS_KEY = "items";
-    public static final String MORE_PAGES_KEY = "more-pages";
+    private static final String ITEMS_KEY = "items";
+    private static final String MORE_PAGES_KEY = "more-pages";
 
     /**
      * The user whose followers are being retrieved.
@@ -40,7 +42,6 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
      */
     protected boolean hasMorePages;
 
-
     protected PagedTask(AuthToken authToken, User targetUser, int limit, T lastItem, Handler messageHandler) {
         super(authToken, messageHandler);
 
@@ -49,9 +50,21 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
         this.lastItem = lastItem;
     }
 
+    //For Testing
+    protected PagedTask(AuthenticatedRequest request, Handler messageHandler) {
+        super(request.getAuthToken(), messageHandler);
+    }
+
     @Override
     protected void loadSuccessBundle(Bundle msgBundle) {
         msgBundle.putSerializable(ITEMS_KEY, (Serializable) this.items);
         msgBundle.putBoolean(MORE_PAGES_KEY, this.hasMorePages);
     }
+
+    protected void loadImages(List<User> users) throws IOException {
+        for (User u : users) {
+            BackgroundTaskUtils.loadImage(u);
+        }
+    }
+
 }

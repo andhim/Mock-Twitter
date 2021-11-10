@@ -1,18 +1,22 @@
 package edu.byu.cs.tweeter.client.backgroundTask;
 
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
+import java.io.IOException;
+
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
+import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 
 /**
  * Background task that posts a new status sent by a user.
  */
 public class PostStatusTask extends AuthenticatedTask {
     private static final String LOG_TAG = "PostStatusTask";
+    static final String URL_PATH = "/poststatus";
 
     /**
      * The new status being sent. Contains all properties of the status,
@@ -27,7 +31,11 @@ public class PostStatusTask extends AuthenticatedTask {
     }
 
     @Override
-    public boolean runTask() {
-        return true;
+    public boolean runTask() throws IOException, TweeterRemoteException {
+        PostStatusRequest request = new PostStatusRequest(authToken, status);
+        PostStatusResponse response = Cache.getInstance().getServerFacade().postStatus(request, URL_PATH);
+
+        boolean success = response.isSuccess();
+        return success;
     }
 }

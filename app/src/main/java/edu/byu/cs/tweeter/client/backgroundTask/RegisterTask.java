@@ -1,22 +1,24 @@
 package edu.byu.cs.tweeter.client.backgroundTask;
 
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
 
-import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.util.FakeData;
-import edu.byu.cs.tweeter.util.Pair;
+import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
+import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 
 /**
  * Background task that creates a new user account and logs in the new user (i.e., starts a session).
  */
 public class RegisterTask extends AuthenticateTask {
     private static final String LOG_TAG = "RegisterTask";
+    private final String URL_PATH = "/register";
+    private RegisterRequest request;
+    private ServerFacade serverFacade;
+
 
     /**
      * The user's first name.
@@ -31,8 +33,7 @@ public class RegisterTask extends AuthenticateTask {
      */
     private String image;
 
-    public RegisterTask(String firstName, String lastName, String username, String password,
-                        String image, Handler messageHandler) {
+    public RegisterTask(String firstName, String lastName, String username, String password, String image, Handler messageHandler) {
         super(username, password, messageHandler);
         this.firstName = firstName;
         this.lastName = lastName;
@@ -40,21 +41,20 @@ public class RegisterTask extends AuthenticateTask {
     }
 
     @Override
-    public boolean runTask() throws IOException {
-        Pair<User, AuthToken> registerResult = doRegister();
-
-        this.user = registerResult.getFirst();
-        this.authToken = registerResult.getSecond();
-
-        BackgroundTaskUtils.loadImage(user);
-
-        return true;
+    public boolean runTask() throws IOException, TweeterRemoteException {
+        return doRegister();
     }
 
-    private Pair<User, AuthToken> doRegister() {
-        User registeredUser = getFakeData().getFirstUser();
-        AuthToken authToken = getFakeData().getAuthToken();
-        return new Pair<>(registeredUser, authToken);
-    }
+    private boolean doRegister() throws IOException, TweeterRemoteException {
+        RegisterRequest request = new RegisterRequest(firstName, lastName, username, password, image);
+        RegisterResponse response = Cache.getInstance().getServerFacade().register(request, URL_PATH);
+        boolean success = response.isSuccess();
+        if (success) {
+            this.user = response.getUser();
+            this.authToken = response.getAuthToken();
+            BackgroundTaskUtils.loadImage(user);
+        }
 
+        return success;
+    }
 }

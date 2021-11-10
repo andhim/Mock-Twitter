@@ -1,9 +1,9 @@
 package edu.byu.cs.tweeter.client.presenter;
 
-import edu.byu.cs.tweeter.client.model.service.RegisterService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter extends AuthenticationPresenter implements RegisterService.RegisterObserver {
+public class RegisterPresenter extends AuthenticationPresenter implements UserService.RegisterObserver {
 
     public RegisterPresenter(RegisterView view) {
         super(view);
@@ -16,7 +16,7 @@ public class RegisterPresenter extends AuthenticationPresenter implements Regist
         String message = validateRegistration(firstName, lastName, alias, password, imageBytesBase64);
         if (message == null) {
             view.displayInfoMessage("Registering...");
-            new RegisterService().register(firstName, lastName, alias, password, imageBytesBase64, this);
+            new UserService().register(firstName, lastName, alias, password, imageBytesBase64, this);
         } else {
             view.displayErrorMessage("Register failed: " + message);
         }

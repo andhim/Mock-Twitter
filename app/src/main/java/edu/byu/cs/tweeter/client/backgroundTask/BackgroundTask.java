@@ -7,7 +7,9 @@ import android.util.Log;
 
 import java.io.IOException;
 
-import edu.byu.cs.tweeter.util.FakeData;
+import edu.byu.cs.tweeter.client.util.FakeData;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+
 
 public abstract class BackgroundTask implements Runnable {
     private static final String LOG_TAG = "BackgroundTask";
@@ -72,7 +74,7 @@ public abstract class BackgroundTask implements Runnable {
         return new FakeData();
     }
 
-    protected abstract boolean runTask() throws IOException;
+    protected abstract boolean runTask() throws IOException, TweeterRemoteException;
 
     //NOTE: this is not abstract because some method won't need to return anything
     protected void loadSuccessBundle(Bundle msgBundle) {

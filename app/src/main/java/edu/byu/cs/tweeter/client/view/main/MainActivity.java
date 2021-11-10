@@ -30,8 +30,6 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.MainView {
 
-
-
     public static final String CURRENT_USER_KEY = "CurrentUser";
 
     //GetFollowersCount
@@ -79,8 +77,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         Intent intent = new Intent(this, LoginActivity.class);
         //Clear everything so that the main activity is recreated with the login page.
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //Clear user data (cached data).
-        Cache.getInstance().clearCache();
         startActivity(intent);
     }
 
@@ -109,8 +105,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     private TextView followerCount;
     private Button followButton;
     private MainPresenter presenter;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
