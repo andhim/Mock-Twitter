@@ -1,6 +1,8 @@
 package edu.byu.cs.tweeter.client;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.times;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,7 +30,6 @@ public class StatusServiceTest {
     private User user;
     private int limit;
     private Status lastStatus;
-    private GetStoryRequest request;
     private FakeData fakeData;
 
     private CountDownLatch countDownLatch;
@@ -45,8 +46,6 @@ public class StatusServiceTest {
         limit = 10;
         lastStatus = null;
 
-//        request = new GetStoryRequest(new AuthToken(), "@allen", 10, null);
-
         resetCountDownLatch();
     }
 
@@ -61,31 +60,6 @@ public class StatusServiceTest {
 
     @Test
     public void getStory() {
-//        Answer<Void> getStorySuccededAnswers = new Answer<Void>() {
-//            @Override
-//            public Void answer(InvocationOnMock invocation) throws Throwable {
-//                AuthToken authTokenParam = invocation.getArgument(0);
-//                User userParam = invocation.getArgument(1);
-//                int limitParam = invocation.getArgument(2);
-//                Status lastStatus = invocation.getArgument(3);
-//                StatusService.GetStoryObserver observer = invocation.getArgument(4);
-//
-//                assertEquals(authTokenParam, authToken);
-//                assertEquals(userParam.getName(), user.getName());
-//                assertEquals(userParam.getAlias(), user.getAlias());
-//                assertEquals(userParam.getImageBytes(), user.getImageBytes());
-//                assertEquals(userParam.getImageUrl(), user.getImageUrl());
-//                assertEquals(limitParam, limit);
-//                assertNull(lastStatus);
-//
-//
-//
-//                return null;
-//            }
-//        };
-//        Mockito.doAnswer(getStorySuccededAnswers).when(statusServiceSpy).getStory(Mockito.any(), Mockito.any(), limit, Mockito.any(), Mockito.any());
-
-
         Answer<Void> getItemsSuccededAnswers = new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -104,21 +78,6 @@ public class StatusServiceTest {
             assertTrue("Caught an InterruptedException: " + e.getMessage(), false);
         }
 
-        List<Status> expectedStatus = new ArrayList<>();
-        List<Status> allStatuses = fakeData.getFakeStatuses();
-
-        for (int i = 0; i < 10; i++){
-            expectedStatus.add(allStatuses.get(i));
-        }
-
-        Mockito.verify(mockObserver).getItemSucceeded(Mockito.anyListOf(Status.class), Mockito.anyObject(), Mockito.anyBoolean());
-
-//        Mockito.verify(mockObserver).getItemSucceeded(expectedStatus, expectedStatus.get(9), true);
-//        Mockitowhen(mockObserver.getItemSucceeded(Mockito.any(), Mockito.any(), Mockito.any()));
-
+        Mockito.verify(mockObserver, times(1)).getItemSucceeded(Mockito.anyListOf(Status.class), Mockito.anyObject(), Mockito.anyBoolean());
     }
-
-
-
-
 }
