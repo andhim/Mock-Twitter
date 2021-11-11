@@ -37,8 +37,6 @@ public class ServerFacadeTest {
         user = fakeData.getFirstUser();
     }
 
-
-
     @Test
     public void registerTest() {
         User expectedUser = user;
@@ -58,7 +56,6 @@ public class ServerFacadeTest {
 
             User actualUser = actual.getUser();
 
-            //Erase the lines below for MileStone 4 and add assertEquals(expectedUser.class(), actualUser.class());
             assertEquals(expectedUser.getImageUrl(), actualUser.getImageUrl());
             assertEquals(expectedUser.getFirstName(), actualUser.getFirstName());
             assertEquals(expectedUser.getLastName(), actualUser.getLastName());

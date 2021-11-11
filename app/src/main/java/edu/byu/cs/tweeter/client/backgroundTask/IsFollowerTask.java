@@ -45,7 +45,7 @@ public class IsFollowerTask extends AuthenticatedTask {
         IsFollowerResponse response = Cache.getInstance().getServerFacade().isFollower(request, URL_PATH);
         boolean success = response.isSuccess();
         if (success) {
-            this.isFollower = response.isFollower();
+            this.isFollower = response.getIsFollower();
         }
         return success;
     }
