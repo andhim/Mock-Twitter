@@ -168,10 +168,10 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
                 followButton.setEnabled(false);
 
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
-                    presenter.unfollow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
+                    presenter.unfollow(Cache.getInstance().getCurrUserAuthToken(), Cache.getInstance().getCurrUser(), selectedUser);
                     displayInfoMessage("Removing " + selectedUser.getName() + "...");
                 } else {
-                    presenter.follow(Cache.getInstance().getCurrUserAuthToken(), selectedUser);
+                    presenter.follow(Cache.getInstance().getCurrUserAuthToken(), Cache.getInstance().getCurrUser(), selectedUser);
                     displayInfoMessage("Adding " + selectedUser.getName() + "...");
                 }
             }

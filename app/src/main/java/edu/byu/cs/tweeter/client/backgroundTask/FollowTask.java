@@ -23,16 +23,18 @@ public class FollowTask extends AuthenticatedTask {
      * The user that is being followed.
      */
     private User followee;
+    private User currUser;
 
-    public FollowTask(AuthToken authToken, User followee, Handler messageHandler) {
+    public FollowTask(AuthToken authToken, User currUser, User followee, Handler messageHandler) {
         super(authToken, messageHandler);
 
+        this.currUser = currUser;
         this.followee = followee;
     }
 
     @Override
     public boolean runTask() throws IOException, TweeterRemoteException {
-        FollowRequest request = new FollowRequest(authToken, followee.getAlias());
+        FollowRequest request = new FollowRequest(authToken, currUser.getAlias(), followee.getAlias());
         FollowResponse response = Cache.getInstance().getServerFacade().follow(request, URL_PATH);
 
         boolean success = response.isSuccess();

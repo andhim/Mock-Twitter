@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.server.service;
 
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
@@ -8,21 +9,30 @@ import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
-import edu.byu.cs.tweeter.server.dao.UserDAO;
+import edu.byu.cs.tweeter.server.dao.DAOFactory;
+import edu.byu.cs.tweeter.server.dao.IAuthTokenDAO;
+import edu.byu.cs.tweeter.server.dao.IUserDAO;
+import edu.byu.cs.tweeter.server.dao.dynamoDB.AuthTokenDAO;
+import edu.byu.cs.tweeter.server.dao.dynamoDB.UserDAO;
 
-public class UserService {
+public class UserService extends Service {
+
+    public UserService(DAOFactory factory) {
+        super(factory);
+    }
 
     public LoginResponse login(LoginRequest request) {
         if (request == null ||
             request.getUsername() == null ||
             request.getPassword() == null) {
-            throw new RuntimeException("[BadRequest]");
+            throw new RuntimeException("[BadRequest] Invalid input");
         }
-
         try {
-            return getUserDAO().login(request);
+            LoginResponse response = factory.getUserDAO().login(request);
+            getAuthTokenDAO().putAuthToken(response.getAuthToken());
+            return response;
         } catch (Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -35,13 +45,12 @@ public class UserService {
             request.getPassword() == null) {
             throw new RuntimeException("[BadRequest] Invalid input");
         }
-//        if (invalidAuthToken) {
-//            throw new RuntimeException("[AuthFailure] ..." ) table that has userAlias, authToken, and how current it is
-//        }
         try {
-            return getUserDAO().register(request);
+            RegisterResponse response = factory.getUserDAO().register(request);
+            getAuthTokenDAO().putAuthToken(response.getAuthToken());
+            return response;
         } catch (Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -51,11 +60,13 @@ public class UserService {
             request.getAuthToken() == null) {
             throw new RuntimeException("[BadRequest] Invalid input");
         }
-
+        if (!validateAuthToken(request.getAuthToken())) {
+            throw new RuntimeException("[BadRequest] Invalid token" );
+        }
         try {
-            return getUserDAO().getUser(request);
+            return factory.getUserDAO().getUser(request);
         } catch (Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -63,16 +74,16 @@ public class UserService {
         if (request == null || request.getAuthToken() == null) {
             throw new RuntimeException("[BadRequest] Invalid input");
         }
-
         try {
-            return getUserDAO().logout(request);
+            getAuthTokenDAO().deleteAuthToken(request.getAuthToken());
+            return factory.getUserDAO().logout(request);
         } catch (Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
-    UserDAO getUserDAO() {
-        return new UserDAO();
-    }
 
+    private IAuthTokenDAO getAuthTokenDAO() {
+        return factory.getAuthTokenDAO();
+    }
 }

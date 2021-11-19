@@ -185,7 +185,7 @@ public class FeedFragment extends Fragment implements FeedPresenter.FeedView{
             userImage.setImageDrawable(ImageUtils.drawableFromByteArray(status.getUser().getImageBytes()));
             userAlias.setText(status.getUser().getAlias());
             userName.setText(status.getUser().getName());
-            datetime.setText(status.getDate());
+            datetime.setText(status.getDatetime());
 
             // @mentions and urls clickable
             SpannableString spannableString = new SpannableString(status.getPost());

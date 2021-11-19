@@ -11,13 +11,13 @@ public class Follow implements Serializable {
     /**
      * The user doing the following.
      */
-    public User follower;
+    private User follower;
     /**
      * The user being followed.
      */
-    public User followee;
+    private User followee;
 
-    public Follow() {
+    private Follow() {
     }
 
     public Follow(User follower, User followee) {
@@ -31,6 +31,14 @@ public class Follow implements Serializable {
 
     public User getFollowee() {
         return followee;
+    }
+
+    public void setFollower(User follower) {
+        this.follower = follower;
+    }
+
+    public void setFollowee(User followee) {
+        this.followee = followee;
     }
 
     @Override

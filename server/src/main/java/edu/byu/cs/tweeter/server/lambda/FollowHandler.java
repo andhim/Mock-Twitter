@@ -5,12 +5,14 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
+import edu.byu.cs.tweeter.server.dao.DAOFactory;
 import edu.byu.cs.tweeter.server.service.FollowService;
 
 public class FollowHandler implements RequestHandler<FollowRequest, FollowResponse> {
     @Override
     public FollowResponse handleRequest(FollowRequest request, Context context) {
-        FollowService service = new FollowService();
+        DAOFactory factory = HandlerConfig.getFactory();
+        FollowService service = new FollowService(factory);
         return service.follow(request);
     }
 }

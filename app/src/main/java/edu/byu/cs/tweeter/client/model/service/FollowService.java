@@ -21,8 +21,8 @@ public class FollowService extends GetPagedService<User>{
         void followSucceeded();
     }
 
-    public void follow(AuthToken authToken, User selectedUser, FollowObserver observer) {
-        execute(new FollowTask(authToken, selectedUser, new FollowHandler(observer)));
+    public void follow(AuthToken authToken, User currUser, User selectedUser, FollowObserver observer) {
+        execute(new FollowTask(authToken, currUser, selectedUser, new FollowHandler(observer)));
     }
 
     private class FollowHandler extends BackgroundTaskHandler {
@@ -48,8 +48,8 @@ public class FollowService extends GetPagedService<User>{
         void unfollowSucceeded();
     }
 
-    public void unfollow(AuthToken authToken, User selectedUser, UnfollowObserver observer) {
-        execute(new UnfollowTask(authToken, selectedUser, new UnfollowHandler(observer)));
+    public void unfollow(AuthToken authToken, User currUser, User selectedUser, UnfollowObserver observer) {
+        execute(new UnfollowTask(authToken, currUser, selectedUser, new UnfollowHandler(observer)));
     }
 
     private class UnfollowHandler extends BackgroundTaskHandler {

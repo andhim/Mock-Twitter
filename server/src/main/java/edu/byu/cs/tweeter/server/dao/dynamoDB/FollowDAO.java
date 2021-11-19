@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.server.dao;
+package edu.byu.cs.tweeter.server.dao.dynamoDB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,13 @@ import edu.byu.cs.tweeter.model.net.response.GetFollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
+import edu.byu.cs.tweeter.server.dao.IFollowDAO;
 import edu.byu.cs.tweeter.server.util.FakeData;
 
 /**
  * A DAO for accessing 'following' data from the database.
  */
-public class FollowDAO {
+public class FollowDAO implements IFollowDAO {
 
     public GetFollowersCountResponse getFollowersCount(GetFollowersCountRequest request) {
         return new GetFollowersCountResponse(getDummyFollowers().size());
@@ -34,20 +35,8 @@ public class FollowDAO {
         return new GetFollowingCountResponse(getDummyFollowees().size());
     }
 
-    /**
-     * Gets the count of users from the database that the user specified is followed by. The
-     * current implementation uses generated data and doesn't actually access a database.
-     *
-     * @param followee the User whose count of how many followers is desired.
-     * @return said count.
-     */
-    public Integer getFollowersCount(User followee) {
-        // TODO: uses the dummy data.  Replace with a real implementation.
-        assert followee != null;
-        return getDummyFollowers().size();
-    }
-
     public FollowResponse follow(FollowRequest request) {
+        //TODO:
         return new FollowResponse();
     }
 
@@ -189,4 +178,17 @@ public class FollowDAO {
     FakeData getFakeData() {
         return new FakeData();
     }
+
+    /**
+     //     * Gets the count of users from the database that the user specified is followed by. The
+     //     * current implementation uses generated data and doesn't actually access a database.
+     //     *
+     //     * @param followee the User whose count of how many followers is desired.
+     //     * @return said count.
+     //     */
+//    public Integer getFollowersCount(User followee) {
+//        // TODO: uses the dummy data.  Replace with a real implementation.
+//        assert followee != null;
+//        return getDummyFollowers().size();
+//    }
 }

@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
+import edu.byu.cs.tweeter.server.dao.DAOFactory;
 import edu.byu.cs.tweeter.server.service.FollowService;
 
 /**
@@ -23,7 +24,8 @@ public class GetFollowersHandler implements RequestHandler<GetFollowersRequest, 
      */
     @Override
     public GetFollowersResponse handleRequest(GetFollowersRequest request, Context context) {
-        FollowService service = new FollowService();
+        DAOFactory factory = HandlerConfig.getFactory();
+        FollowService service = new FollowService(factory);
         return service.getFollowers(request);
     }
 }

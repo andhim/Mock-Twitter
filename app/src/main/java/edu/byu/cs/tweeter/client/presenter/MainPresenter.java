@@ -1,6 +1,9 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -46,15 +49,16 @@ public class MainPresenter extends Presenter implements UserService.LogoutObserv
         new FollowService().isFollower(authToken, currUser, selectedUser, this);
     }
 
-    public void unfollow(AuthToken authToken, User selectedUser) {
-        new FollowService().unfollow(authToken, selectedUser, this);
+    public void unfollow(AuthToken authToken, User currUser, User selectedUser) {
+        new FollowService().unfollow(authToken, currUser, selectedUser, this);
     }
 
-    public void follow(AuthToken authToken, User selectedUser) {
-        new FollowService().follow(authToken, selectedUser, this);
+    public void follow(AuthToken authToken, User currUser, User selectedUser) {
+        new FollowService().follow(authToken, currUser, selectedUser, this);
     }
 
     //postStatus
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void postStatus(AuthToken authToken, String post, User currUser)  {
         try {
             view.displayInfoMessage("Posting Status...");
@@ -73,6 +77,7 @@ public class MainPresenter extends Presenter implements UserService.LogoutObserv
         return statusService;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private String getFormattedDateTime() throws ParseException {
         SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");

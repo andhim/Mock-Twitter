@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.server.service;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
+
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
@@ -14,12 +16,17 @@ import edu.byu.cs.tweeter.model.net.response.GetFollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
-import edu.byu.cs.tweeter.server.dao.FollowDAO;
+import edu.byu.cs.tweeter.server.dao.DAOFactory;
+import edu.byu.cs.tweeter.server.dao.dynamoDB.FollowDAO;
 
 /**
  * Contains the business logic for getting the users a user is following.
  */
-public class FollowService {
+public class FollowService extends Service {
+
+    public FollowService(DAOFactory factory) {
+        super(factory);
+    }
 
     /**
      * Returns the users that the user specified in the request is following. Uses information in

@@ -44,7 +44,7 @@ public class PostStatusTest {
                 StatusService.PostStatusObserver observer = invocation.getArgument(2);
 
                 Assert.assertEquals(invocation.getArgument(0), mockAuthToken);
-                Assert.assertEquals(status.post, post);
+                Assert.assertEquals(status.getPost(), post);
                 Assert.assertEquals(observer, mainPresenterSpy);
                 observer.postStatusSucceeded();
                 return null;
@@ -75,7 +75,7 @@ public class PostStatusTest {
                 StatusService.PostStatusObserver observer = invocation.getArgument(2);
 
                 Assert.assertEquals(invocation.getArgument(0), mockAuthToken);
-                Assert.assertEquals(status.post, post);
+                Assert.assertEquals(status.getPost(), post);
                 Assert.assertEquals(observer, mainPresenterSpy);
                 observer.handleFailed("Failed to post the status: ");
                 return null;
@@ -111,7 +111,7 @@ public class PostStatusTest {
                 StatusService.PostStatusObserver observer = invocation.getArgument(2);
 
                 Assert.assertEquals(invocation.getArgument(0), mockAuthToken);
-                Assert.assertEquals(status.post, post);
+                Assert.assertEquals(status.getPost(), post);
                 Assert.assertEquals(observer, mainPresenterSpy);
 
                 observer.handleFailed("Failed to post the status because of the exception: ");

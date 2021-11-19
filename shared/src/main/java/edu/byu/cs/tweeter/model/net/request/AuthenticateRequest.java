@@ -1,6 +1,6 @@
 package edu.byu.cs.tweeter.model.net.request;
 
-public class AuthenticateRequest {
+public class AuthenticateRequest implements BaseRequest{
     protected String username;
     protected String password;
 

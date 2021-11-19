@@ -19,19 +19,21 @@ public class UnfollowTask extends AuthenticatedTask {
     static final String URL_PATH = "/unfollow";
 
     /**
-     * The user that is being followed.
+     * The user that is being unfollowed.
      */
     private User followee;
+    private User currUser;
 
-    public UnfollowTask(AuthToken authToken, User followee, Handler messageHandler) {
+    public UnfollowTask(AuthToken authToken, User currUser, User followee, Handler messageHandler) {
         super(authToken, messageHandler);
 
+        this.currUser = currUser;
         this.followee = followee;
     }
 
     @Override
     public boolean runTask() throws IOException, TweeterRemoteException {
-        UnfollowRequest request = new UnfollowRequest(authToken, followee.getAlias());
+        UnfollowRequest request = new UnfollowRequest(authToken, currUser.getAlias(), followee.getAlias());
         UnfollowResponse response = Cache.getInstance().getServerFacade().unfollow(request, URL_PATH);
 
         boolean success = response.isSuccess();
