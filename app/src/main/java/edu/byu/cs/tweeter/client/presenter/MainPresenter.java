@@ -62,6 +62,7 @@ public class MainPresenter extends Presenter implements UserService.LogoutObserv
     public void postStatus(AuthToken authToken, String post, User currUser)  {
         try {
             view.displayInfoMessage("Posting Status...");
+
             Status newStatus = new Status(post, currUser, getFormattedDateTime(), parseURLs(post), parseMentions(post));
             getStatusService().postStatus(authToken, newStatus, this);
         } catch (Exception ex) {
@@ -80,7 +81,7 @@ public class MainPresenter extends Presenter implements UserService.LogoutObserv
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String getFormattedDateTime() throws ParseException {
         SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
+        SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm:ss aaa");
 
         return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
     }

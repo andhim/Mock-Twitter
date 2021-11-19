@@ -48,13 +48,13 @@ public class StoryDAO implements IStoryDAO {
     @Override
     public GetStoryResponse getStory(GetStoryRequest request) {
         HashMap<String, String> nameMap = new HashMap<String, String>();
-        nameMap.put("#a", ALIAS);
+        nameMap.put("#p", ALIAS);
 
         HashMap<String, Object> valueMap = new HashMap<>();
         valueMap.put(":alias", request.getUserAlias());
 
         QuerySpec spec = new QuerySpec()
-                .withKeyConditionExpression("#a = :alias")
+                .withKeyConditionExpression("#p = :alias")
                 .withScanIndexForward(false)
                 .withNameMap(nameMap)
                 .withValueMap(valueMap)
@@ -73,7 +73,6 @@ public class StoryDAO implements IStoryDAO {
         List<Status> statuses = new ArrayList<>();
         while (iterator.hasNext()) {
             item = iterator.next();
-            System.out.println(item.toJSONPretty());
             User user = new User(item.getString("firstName"), item.getString("lastName"), item.getString("alias"), item.getString("imageURL"));
             Status status = new Status(item.getString("post"), user, item.getString("datetime"), item.getList("urls"), item.getList("mentions"));
             statuses.add(status);

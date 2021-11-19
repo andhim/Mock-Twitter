@@ -8,7 +8,7 @@ public class DateUtil {
     public static long stringToEpoch(String datetime) {
         long epoch = 0;
         try {
-            SimpleDateFormat df = new SimpleDateFormat("MMM dd yyyy hh:mm aa");
+            SimpleDateFormat df = new SimpleDateFormat("MMM dd yyyy hh:mm:ss aa");
             Date date = df.parse(datetime);
             epoch = date.getTime();
         } catch(Exception e) {
