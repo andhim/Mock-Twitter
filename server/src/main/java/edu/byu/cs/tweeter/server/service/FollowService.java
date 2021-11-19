@@ -43,7 +43,7 @@ public class FollowService extends Service {
         }
 
         try {
-            return getFollowDAO().getFollowees(request);
+            return factory.getFollowDAO().getFollowees(request);
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }
@@ -64,29 +64,39 @@ public class FollowService extends Service {
         }
 
         try {
-            return getFollowDAO().getFollowers(request); //noDao
+            return factory.getFollowDAO().getFollowers(request); //noDao
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }
     }
 
     public FollowResponse follow(FollowRequest request) {
-        if (request == null || request.getAuthToken() == null || request.getSelectedUserAlias() == null) {
+        if (request == null ||
+                request.getCurrImageURL() == null ||
+                request.getFolloweeImageURL() == null ||
+                request.getFolloweeAlias() == null ||
+                request.getFolloweeName() == null ||
+                request.getCurrUserName() == null ||
+                request.getAuthToken() == null ||
+                request.getCurrUserAlias() == null) {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return getFollowDAO().follow(request);
+            return factory.getFollowDAO().follow(request);
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }
     }
 
     public UnfollowResponse unfollow(UnfollowRequest request) {
-        if (request == null || request.getAuthToken() == null || request.getSelectedUserAlias() == null) {
+        if (request == null ||
+                request.getSelectedUserAlias() == null ||
+                request.getAuthToken() == null ||
+                request.getCurrUserAlias() == null) {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return getFollowDAO().unfollow(request);
+            return factory.getFollowDAO().unfollow(request);
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }
@@ -97,7 +107,7 @@ public class FollowService extends Service {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return getFollowDAO().isFollower(request);
+            return factory.getFollowDAO().isFollower(request);
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }
@@ -108,7 +118,7 @@ public class FollowService extends Service {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return getFollowDAO().getFollowersCount(request);
+            return factory.getFollowDAO().getFollowersCount(request);
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }
@@ -119,22 +129,10 @@ public class FollowService extends Service {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return getFollowDAO().getFollowingCount(request);
+            return factory.getFollowDAO().getFollowingCount(request);
         } catch(Exception ex) {
             throw new RuntimeException("[BadRequest]" + ex.getMessage());
         }
     }
-
-    /**
-     * Returns an instance of {@link FollowDAO}. Allows mocking of the FollowDAO class
-     * for testing purposes. All usages of FollowDAO should get their FollowDAO
-     * instance from this method to allow for mocking of the instance.
-     *
-     * @return the instance.
-     */
-    FollowDAO getFollowDAO() {
-        return new FollowDAO();
-    }
-
 
 }

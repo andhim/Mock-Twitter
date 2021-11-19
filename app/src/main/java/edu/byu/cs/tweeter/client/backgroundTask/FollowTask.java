@@ -18,7 +18,6 @@ public class FollowTask extends AuthenticatedTask {
     private static final String LOG_TAG = "FollowTask";
     static final String URL_PATH = "/follow";
 
-
     /**
      * The user that is being followed.
      */
@@ -34,7 +33,7 @@ public class FollowTask extends AuthenticatedTask {
 
     @Override
     public boolean runTask() throws IOException, TweeterRemoteException {
-        FollowRequest request = new FollowRequest(authToken, currUser.getAlias(), followee.getAlias());
+        FollowRequest request = new FollowRequest(authToken, currUser.getName(), currUser.getImageUrl(), currUser.getAlias(), followee.getName(), followee.getImageUrl(), followee.getAlias());
         FollowResponse response = Cache.getInstance().getServerFacade().follow(request, URL_PATH);
 
         boolean success = response.isSuccess();

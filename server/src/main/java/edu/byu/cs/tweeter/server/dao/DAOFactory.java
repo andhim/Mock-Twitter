@@ -5,5 +5,6 @@ public abstract class DAOFactory {
     public abstract IAuthTokenDAO getAuthTokenDAO();
     public abstract IStoryDAO getStoryDAO();
     public abstract IFeedDAO getFeedDAO();
+    public abstract IFollowDAO getFollowDAO();
 
 }

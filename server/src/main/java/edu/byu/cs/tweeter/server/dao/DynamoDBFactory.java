@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 
 import edu.byu.cs.tweeter.server.dao.dynamoDB.AuthTokenDAO;
 import edu.byu.cs.tweeter.server.dao.dynamoDB.FeedDAO;
+import edu.byu.cs.tweeter.server.dao.dynamoDB.FollowDAO;
 import edu.byu.cs.tweeter.server.dao.dynamoDB.StoryDAO;
 import edu.byu.cs.tweeter.server.dao.dynamoDB.UserDAO;
 
@@ -15,6 +16,7 @@ public class DynamoDBFactory extends DAOFactory {
     private IAuthTokenDAO authTokenDAO;
     private IStoryDAO storyDAO;
     private IFeedDAO feedDAO;
+    private IFollowDAO followDAO;
 
     private DynamoDB dynamoDB;
 
@@ -62,6 +64,14 @@ public class DynamoDBFactory extends DAOFactory {
             feedDAO = new FeedDAO(getDynamoDB().getTable("Feed"));
         }
         return feedDAO;
+    }
+
+    @Override
+    public IFollowDAO getFollowDAO() {
+        if (followDAO == null) {
+            followDAO = new FollowDAO(getDynamoDB().getTable("Follow"));
+        }
+        return followDAO;
     }
 
 

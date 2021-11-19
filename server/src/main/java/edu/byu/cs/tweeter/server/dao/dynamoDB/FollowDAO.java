@@ -1,9 +1,15 @@
 package edu.byu.cs.tweeter.server.dao.dynamoDB;
 
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
+import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersCountRequest;
@@ -27,6 +33,19 @@ import edu.byu.cs.tweeter.server.util.FakeData;
  */
 public class FollowDAO implements IFollowDAO {
 
+    private Table table;
+
+    /**
+     * For testing purpose
+     */
+    public FollowDAO() {
+
+    }
+
+    public FollowDAO(Table followTable) {
+        this.table = followTable;
+    }
+
     public GetFollowersCountResponse getFollowersCount(GetFollowersCountRequest request) {
         return new GetFollowersCountResponse(getDummyFollowers().size());
     }
@@ -36,16 +55,45 @@ public class FollowDAO implements IFollowDAO {
     }
 
     public FollowResponse follow(FollowRequest request) {
-        //TODO:
+        try {
+            Item item = new Item()
+                    .withPrimaryKey("followerAlias", request.getCurrUserAlias())
+                    .withString("followeeAlias", request.getFolloweeAlias())
+                    .withString("followerName", request.getCurrUserName())
+                    .withString("followerImageURL", request.getCurrImageURL())
+                    .withString("followeeName", request.getFolloweeName())
+                    .withString("followeeImageURL", request.getFolloweeImageURL());
+            table.putItem(item);
+        } catch (Exception e) {
+            throw new RuntimeException("Database error");
+        }
         return new FollowResponse();
     }
 
     public UnfollowResponse unfollow(UnfollowRequest request) {
+        DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
+                .withPrimaryKey("followerAlias",request.getCurrUserAlias(), "followeeAlias", request.getSelectedUserAlias());
+        try {
+            table.deleteItem(deleteItemSpec);
+        } catch (Exception e) {
+            throw new RuntimeException("Database error");
+        }
         return new UnfollowResponse();
     }
 
+    /**
+     * Check if a currentUser is following followee
+     */
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
-        boolean isFollower = new Random().nextInt(2) == 0;
+        GetItemSpec spec = new GetItemSpec().withPrimaryKey("followerAlias", request.getCurrUserAlias(), "followeeAlias", request.getSelectedUserAlias());
+        Item item = null;
+        try {
+            item = table.getItem(spec);
+        } catch (Exception e) {
+            throw new RuntimeException("Database error");
+        }
+        boolean isFollower = item == null ? false : true;
+
         return new IsFollowerResponse(isFollower);
     }
 
