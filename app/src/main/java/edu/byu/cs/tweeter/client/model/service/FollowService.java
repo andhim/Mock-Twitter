@@ -153,7 +153,7 @@ public class FollowService extends GetPagedService<User>{
     }
 
     private class GetFollowersCountHandler extends BackgroundTaskHandler {
-        private final String PREFIX_MESSAGE = "Failed to get following count: ";
+        private final String PREFIX_MESSAGE = "Failed to get followers count: ";
 
         public GetFollowersCountHandler(GetFollowersCountObserver observer) {
             super(observer);

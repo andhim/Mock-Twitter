@@ -1,7 +1,5 @@
 package edu.byu.cs.tweeter.server.service;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
-
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
@@ -41,11 +39,10 @@ public class FollowService extends Service {
         if (request == null || request.getFollowerAlias() == null || request.getAuthToken() == null || request.getLimit() <= 0) {
             throw new RuntimeException("[BadRequest] Invalid request");
         }
-
         try {
             return factory.getFollowDAO().getFollowees(request);
         } catch(Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -62,11 +59,10 @@ public class FollowService extends Service {
         if (request == null || request.getFolloweeAlias() == null || request.getAuthToken() == null || request.getLimit() <= 0) {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
-
         try {
-            return factory.getFollowDAO().getFollowers(request); //noDao
+            return factory.getFollowDAO().getFollowers(request.getFolloweeAlias(), request.getLimit(), request.getLastFollowerAlias());
         } catch(Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -82,9 +78,12 @@ public class FollowService extends Service {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return factory.getFollowDAO().follow(request);
+            FollowResponse response = factory.getFollowDAO().follow(request);
+            factory.getUserDAO().incrementFollow(request);
+
+            return response;
         } catch(Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -96,9 +95,12 @@ public class FollowService extends Service {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return factory.getFollowDAO().unfollow(request);
+            UnfollowResponse response = factory.getFollowDAO().unfollow(request);
+            factory.getUserDAO().decrementFollow(request);
+
+            return response;
         } catch(Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -109,7 +111,7 @@ public class FollowService extends Service {
         try {
             return factory.getFollowDAO().isFollower(request);
         } catch(Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -118,9 +120,10 @@ public class FollowService extends Service {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return factory.getFollowDAO().getFollowersCount(request);
+            //followersCount on UserDAO
+            return factory.getUserDAO().getFollowersCount(request);
         } catch(Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 
@@ -129,9 +132,10 @@ public class FollowService extends Service {
             throw new RuntimeException("[BadRequest] Invalid request" );
         }
         try {
-            return factory.getFollowDAO().getFollowingCount(request);
+            //followingCount on UserDAO
+            return factory.getUserDAO().getFollowingCount(request);
         } catch(Exception ex) {
-            throw new RuntimeException("[BadRequest]" + ex.getMessage());
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }
 

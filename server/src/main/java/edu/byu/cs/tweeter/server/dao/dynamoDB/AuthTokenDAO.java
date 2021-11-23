@@ -1,8 +1,5 @@
 package edu.byu.cs.tweeter.server.dao.dynamoDB;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
@@ -21,25 +18,31 @@ public class AuthTokenDAO implements IAuthTokenDAO {
 
     @Override
     public AuthToken getAuthToken(String id) throws RuntimeException {
-        GetItemSpec spec = new GetItemSpec().withPrimaryKey("id", id);
         Item item = null;
+        AuthToken token = null;
         try {
+            GetItemSpec spec = new GetItemSpec().withPrimaryKey("id", id);
             item = table.getItem(spec);
+
+            token = new AuthToken(item.getString("id"),
+                    item.getString("alias"),
+                    item.getLong("timestamp"));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to get token from AuthToken table");
+            throw new RuntimeException("Failed to fetch AuthToken");
         }
 
-        AuthToken token = new AuthToken(item.getString("id"),
-                            item.getString("alias"),
-                            item.getLong("timestamp"));
         return token;
     }
 
     @Override
     public void deleteAuthToken(AuthToken authToken) {
-        DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
-                .withPrimaryKey("id", authToken.getId());
-        table.deleteItem(deleteItemSpec);
+        try {
+            DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
+                    .withPrimaryKey("id", authToken.getId());
+            table.deleteItem(deleteItemSpec);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete AuthToken");
+        }
     }
 
     @Override

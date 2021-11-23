@@ -1,25 +1,15 @@
 package edu.byu.cs.tweeter.server.dao.dynamoDB;
 
-import com.amazonaws.services.dynamodbv2.document.Attribute;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
-import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
-import com.amazonaws.services.dynamodbv2.model.QueryResult;
 
-import org.w3c.dom.Attr;
-
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -28,16 +18,14 @@ import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.IStoryDAO;
-import edu.byu.cs.tweeter.server.lambda.HandlerConfig;
-import edu.byu.cs.tweeter.server.util.DateUtil;
 import edu.byu.cs.tweeter.server.util.FakeData;
 import edu.byu.cs.tweeter.server.util.Pair;
+import edu.byu.cs.tweeter.server.util.Utils;
 
 public class StoryDAO implements IStoryDAO {
 
-    private static final String ALIAS = "alias";
-    private static final String TIMESTAMP = "timestamp";
-    private static final String TABLE_NAME = "Story";
+    private static final String PARTITION_KEY = "alias";
+    private static final String SORT_KEY = "timestamp";
 
     private Table table;
 
@@ -47,78 +35,58 @@ public class StoryDAO implements IStoryDAO {
 
     @Override
     public GetStoryResponse getStory(GetStoryRequest request) {
-        HashMap<String, String> nameMap = new HashMap<String, String>();
-        nameMap.put("#p", ALIAS);
+        ItemCollection<QueryOutcome> items = null;
+        List<Status> statuses = null;
+        try {
+            QuerySpec spec = Utils.getBasicSpec(PARTITION_KEY, request.getUserAlias(), request.getLimit());
 
-        HashMap<String, Object> valueMap = new HashMap<>();
-        valueMap.put(":alias", request.getUserAlias());
+            if (request.getLastStatus() != null) {
+                long timestamp = Utils.stringToEpoch(request.getLastStatus().getDatetime());
+                PrimaryKey lastItemKey = new PrimaryKey(PARTITION_KEY, request.getUserAlias(), SORT_KEY, timestamp);
+                spec.withExclusiveStartKey(lastItemKey);
+            }
 
-        QuerySpec spec = new QuerySpec()
-                .withKeyConditionExpression("#p = :alias")
-                .withScanIndexForward(false)
-                .withNameMap(nameMap)
-                .withValueMap(valueMap)
-                .withMaxResultSize(request.getLimit());
+            items = table.query(spec);
+            Iterator<Item> iterator = items.iterator();
 
-        if (request.getLastStatus() != null) {
-            long timestamp = DateUtil.stringToEpoch(request.getLastStatus().getDatetime());
-            PrimaryKey lastItemKey = new PrimaryKey(ALIAS, request.getUserAlias(), TIMESTAMP, timestamp);
-            spec.withExclusiveStartKey(lastItemKey);
+            Item item = null;
+            statuses = new ArrayList<>();
+            while (iterator.hasNext()) {
+                item = iterator.next();
+                User user = new User(item.getString("firstName"), item.getString("lastName"), item.getString("alias"), item.getString("imageURL"));
+                Status status = new Status(item.getString("post"), user, item.getString("datetime"), item.getList("urls"), item.getList("mentions"));
+                statuses.add(status);
+            }
+        } catch (Exception  e) {
+            throw new RuntimeException("Failed to get stories");
         }
-
-        ItemCollection<QueryOutcome> items = table.query(spec);
-        Iterator<Item> iterator = items.iterator();
-
-        Item item = null;
-        List<Status> statuses = new ArrayList<>();
-        while (iterator.hasNext()) {
-            item = iterator.next();
-            User user = new User(item.getString("firstName"), item.getString("lastName"), item.getString("alias"), item.getString("imageURL"));
-            Status status = new Status(item.getString("post"), user, item.getString("datetime"), item.getList("urls"), item.getList("mentions"));
-            statuses.add(status);
-        }
-
-        boolean hasMore = false;
-        Map<String, AttributeValue> lastItem = items.getLastLowLevelResult().getQueryResult().getLastEvaluatedKey();
-        if (lastItem != null) {
-            hasMore = true;
-        }
-
-        return new GetStoryResponse(hasMore, statuses);
+        return new GetStoryResponse(Utils.checkHasMore(items), statuses);
     }
 
     @Override
     public PostStatusResponse postStory(PostStatusRequest request) {
-        Status status = request.getNewStatus();
-        User user = status.getUser();
-
-        String alias = user.getAlias();
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
-        String imageURL = user.getImageUrl();
-        String post = status.getPost();
-        String datetime = status.getDatetime();
-        long timestamp = DateUtil.stringToEpoch(datetime);;
-        List<String> urls = status.getUrls();
-        List<String> mentions = status.getMentions();
-
         try {
+            Status status = request.getNewStatus();
+            User user = status.getUser();
+            String datetime = status.getDatetime();
+            long timestamp = Utils.stringToEpoch(datetime);
+
+
             Item item = new Item()
-                    .withPrimaryKey("alias", alias)
+                    .withPrimaryKey("alias", user.getAlias())
                     .withLong("timestamp", timestamp)
-                    .withString("firstName", firstName)
-                    .withString("lastName", lastName)
-                    .withString("imageURL", imageURL)
+                    .withString("firstName", user.getFirstName())
+                    .withString("lastName", user.getLastName())
+                    .withString("imageURL", user.getImageUrl())
                     .withString("datetime", datetime)
-                    .withString("post", post)
-                    .withList("urls", urls)
-                    .withList("mentions", mentions);
+                    .withString("post", status.getPost())
+                    .withList("urls", status.getUrls())
+                    .withList("mentions", status.getMentions());
 
             table.putItem(item);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Failed to post a story");
         }
-
         return new PostStatusResponse();
     }
 
