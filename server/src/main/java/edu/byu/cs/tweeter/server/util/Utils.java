@@ -4,13 +4,24 @@ import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
+import com.google.gson.Gson;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
+
 
 public class Utils {
 
@@ -74,5 +85,41 @@ public class Utils {
         Map<String, AttributeValue> lastItem = items.getLastLowLevelResult().getQueryResult().getLastEvaluatedKey();
         return lastItem != null;
     }
+
+    public static String serialize(Object requestInfo) {
+        return (new Gson()).toJson(requestInfo);
+    }
+
+    public static <T> T deserialize(String value, Class<T> returnType) {
+        return (new Gson()).fromJson(value, returnType);
+    }
+
+//    public static Pair<PostStatusRequest, String[]> handleSQSEvent (SQSEvent event) {
+//        List<String> followerAliases = new ArrayList<>();
+//
+//        //TODO: Do we ever get more than one record?
+//        for (SQSEvent.SQSMessage msg : event.getRecords()) {
+//            String[] requestAndAliases = msg.getBody().split("\\?");
+//            String requestString = requestAndAliases[0];
+//            String[] aliases = requestAndAliases[1].split(",");
+//        }
+//        SQSEvent.SQSMessage msg = event.getRecords().get(0);
+//        String jsonString = msg.getBody();
+//        return Utils.deserialize(jsonString, PostStatusRequest.class);
+//    }
+
+    public static SendMessageResult sendToSQS(String messageBody, String url) {
+        SendMessageRequest request = new SendMessageRequest()
+                .withQueueUrl(url)
+                .withMessageBody(messageBody);
+        AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+        SendMessageResult result  = sqs.sendMessage(request);
+
+        return result;
+    }
+
+    public static final String POST_STATUS_QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/754020789969/cs340PostStatusQueue";
+    public static final String UPDATE_FEED_QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/754020789969/cs340UpdateFeedQueue";
+    public static final int BATCH_NUM = 100;
 
 }

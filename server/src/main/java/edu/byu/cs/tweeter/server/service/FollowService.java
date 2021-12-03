@@ -1,11 +1,20 @@
 package edu.byu.cs.tweeter.server.service;
 
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.byu.cs.tweeter.model.domain.Follow;
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
+import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
+import edu.byu.cs.tweeter.model.net.request.SqsRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersCountResponse;
@@ -16,6 +25,7 @@ import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DAOFactory;
 import edu.byu.cs.tweeter.server.dao.dynamoDB.FollowDAO;
+import edu.byu.cs.tweeter.server.util.Utils;
 
 /**
  * Contains the business logic for getting the users a user is following.
@@ -62,6 +72,43 @@ public class FollowService extends Service {
         try {
             return factory.getFollowDAO().getFollowers(request.getFolloweeAlias(), request.getLimit(), request.getLastFollowerAlias());
         } catch(Exception ex) {
+            throw new RuntimeException("[ServerError]" + ex.getMessage());
+        }
+    }
+
+    public void getFollowersForFeed(SQSEvent event) {
+        try {
+            for (SQSEvent.SQSMessage msg : event.getRecords()) {
+                SqsRequest request = Utils.deserialize(msg.getBody(), SqsRequest.class);
+
+                GetFollowersResponse response = factory.getFollowDAO().getFollowers(request.getStatus().getUser().getAlias(), null, null);
+                List<User> followers = response.getFollowers();
+//
+//                //TODO: A
+//                for (int i = 0; i < followers.size(); i++) {
+//                    sb.append(followers.get(i).getAlias());
+//                    if (i != followers.size() - 1) {
+//                        sb.append(",");
+//                    }
+//                }
+//                Utils.sendToSQS(sb.toString(), Utils.UPDATE_FEED_QUEUE_URL);
+
+//                //TODO: B
+                int index = 0;
+                while (index < followers.size()) {
+                    System.out.println("getFollowersForFeed while");
+                    List<String> followerAliases = new ArrayList<>();
+                    for (int i = 0; i < (followers.size() > Utils.BATCH_NUM ? Utils.BATCH_NUM : followers.size()); i++) {
+                        followerAliases.add(followers.get(i).getAlias());
+                    }
+                    request.setFollowerAliases(followerAliases);
+                    String messageBody = Utils.serialize(request);
+                    Utils.sendToSQS(messageBody, Utils.UPDATE_FEED_QUEUE_URL);
+                    index++;
+                };
+
+            }
+        } catch (Exception ex) {
             throw new RuntimeException("[ServerError]" + ex.getMessage());
         }
     }

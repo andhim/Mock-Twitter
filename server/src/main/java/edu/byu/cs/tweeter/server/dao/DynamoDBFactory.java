@@ -60,7 +60,7 @@ public class DynamoDBFactory extends DAOFactory {
     @Override
     public IFeedDAO getFeedDAO() {
         if (feedDAO == null) {
-            feedDAO = new FeedDAO(getDynamoDB().getTable("Feed"));
+            feedDAO = new FeedDAO(getDynamoDB().getTable("Feed"), getDynamoDB());
         }
         return feedDAO;
     }
