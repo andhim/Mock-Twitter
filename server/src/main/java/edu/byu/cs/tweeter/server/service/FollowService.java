@@ -83,29 +83,21 @@ public class FollowService extends Service {
 
                 GetFollowersResponse response = factory.getFollowDAO().getFollowers(request.getStatus().getUser().getAlias(), null, null);
                 List<User> followers = response.getFollowers();
-//
-//                //TODO: A
-//                for (int i = 0; i < followers.size(); i++) {
-//                    sb.append(followers.get(i).getAlias());
-//                    if (i != followers.size() - 1) {
-//                        sb.append(",");
-//                    }
-//                }
-//                Utils.sendToSQS(sb.toString(), Utils.UPDATE_FEED_QUEUE_URL);
 
-//                //TODO: B
-                int index = 0;
-                while (index < followers.size()) {
-                    System.out.println("getFollowersForFeed while");
+                int batchNumber = 1;
+
+                for (User follower : followers) {
                     List<String> followerAliases = new ArrayList<>();
-                    for (int i = 0; i < (followers.size() > Utils.BATCH_NUM ? Utils.BATCH_NUM : followers.size()); i++) {
+                    int condition = followers.size() > (Utils.NUM_IN_BATCH * batchNumber) ? (Utils.NUM_IN_BATCH * batchNumber) : followers.size();
+                    for (int i = Utils.NUM_IN_BATCH * (batchNumber-1); i < condition; i++) {
                         followerAliases.add(followers.get(i).getAlias());
                     }
                     request.setFollowerAliases(followerAliases);
                     String messageBody = Utils.serialize(request);
                     Utils.sendToSQS(messageBody, Utils.UPDATE_FEED_QUEUE_URL);
-                    index++;
-                };
+
+                    batchNumber++;
+                }
 
             }
         } catch (Exception ex) {

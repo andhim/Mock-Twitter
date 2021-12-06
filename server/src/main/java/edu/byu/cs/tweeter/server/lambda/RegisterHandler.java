@@ -7,6 +7,7 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 import edu.byu.cs.tweeter.server.dao.DAOFactory;
 import edu.byu.cs.tweeter.server.service.UserService;
+import edu.byu.cs.tweeter.server.util.Populator;
 
 public class RegisterHandler implements RequestHandler<RegisterRequest, RegisterResponse> {
     @Override

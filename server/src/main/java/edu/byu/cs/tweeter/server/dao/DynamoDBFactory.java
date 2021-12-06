@@ -34,7 +34,7 @@ public class DynamoDBFactory extends DAOFactory {
     @Override
     public IUserDAO getUserDAO() {
         if (userDAO == null) {
-            userDAO = new UserDAO(getDynamoDB().getTable("User"));
+            userDAO = new UserDAO(getDynamoDB().getTable("User"), getDynamoDB());
         }
 
         return userDAO;
@@ -68,7 +68,7 @@ public class DynamoDBFactory extends DAOFactory {
     @Override
     public IFollowDAO getFollowDAO() {
         if (followDAO == null) {
-            followDAO = new FollowDAO(getDynamoDB().getTable("Follow"));
+            followDAO = new FollowDAO(getDynamoDB().getTable("Follow"), getDynamoDB());
         }
         return followDAO;
     }

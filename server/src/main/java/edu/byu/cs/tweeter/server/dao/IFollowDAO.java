@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.server.dao;
 
+import java.util.List;
+
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
@@ -16,5 +18,7 @@ public interface IFollowDAO {
     IsFollowerResponse isFollower(IsFollowerRequest request);
     GetFollowersResponse getFollowers(String alias, Integer limit, String lastFollowerAlias);
     GetFollowingResponse getFollowees(GetFollowingRequest request);
+    void addFollowersBatch(List<String> followers, String followee);
+
 
 }

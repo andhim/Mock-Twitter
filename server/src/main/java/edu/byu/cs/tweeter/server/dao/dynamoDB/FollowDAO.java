@@ -1,10 +1,12 @@
 package edu.byu.cs.tweeter.server.dao.dynamoDB;
 
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
@@ -34,10 +36,14 @@ public class FollowDAO implements IFollowDAO {
     private static final String PARTITION_KEY = "followerAlias";
     private static final String INDEX_PARTITION_KEY = "followeeAlias";
 
-    private Table table;
+    private static final String TABLE_NAME = "Follow";
 
-    public FollowDAO(Table followTable) {
+    private Table table;
+    private DynamoDB dynamoDB;
+
+    public FollowDAO(Table followTable, DynamoDB dynamoDB) {
         this.table = followTable;
+        this.dynamoDB = dynamoDB;
     }
 
     public FollowResponse follow(FollowRequest request) {
@@ -139,6 +145,7 @@ public class FollowDAO implements IFollowDAO {
      *                other information required to satisfy the request.
      * @return the followees.
      */
+    @Override
     public GetFollowingResponse getFollowees(GetFollowingRequest request) {
         ItemCollection<QueryOutcome> items = null;
         List<User> followees = null;
@@ -169,4 +176,36 @@ public class FollowDAO implements IFollowDAO {
 
         return new GetFollowingResponse(followees, Utils.checkHasMore(items));
     }
+
+    @Override
+    public void addFollowersBatch(List<String> followers, String followee) {
+        // Constructor for TableWriteItems takes the name of the table, which I have stored in TABLE_USER
+        TableWriteItems items = new TableWriteItems(TABLE_NAME);
+
+        // Add each user into the TableWriteItems object
+        for (String follower : followers) {
+            Item item = new Item()
+                    .withPrimaryKey("followerAlias", follower)
+                    .withString("followeeAlias", followee)
+                    .withString("followeeImageURL", "https://cs340twitterjaeyoung.s3.us-west-2.amazonaws.com/%40john_profile_image")
+                    .withString("followeeName", "Followee Name")
+                    .withString("followerImageURL", "https://cs340twitterjaeyoung.s3.us-west-2.amazonaws.com/%40john_profile_image")
+                    .withString("followerName", "Follower Name");
+            items.addItemToPut(item);
+
+            // 25 is the maximum number of items allowed in a single batch write.
+            // Attempting to write more than 25 items will result in an exception being thrown
+            if (items.getItemsToPut() != null && items.getItemsToPut().size() == 25) {
+                DAOUtils.loopBatchWrite(items, dynamoDB);
+                items = new TableWriteItems(TABLE_NAME);
+            }
+        }
+
+        // Write any leftover items
+        if (items.getItemsToPut() != null && items.getItemsToPut().size() > 0) {
+            DAOUtils.loopBatchWrite(items, dynamoDB);
+        }
+    }
+
+
 }

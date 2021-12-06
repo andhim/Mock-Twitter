@@ -1,5 +1,8 @@
 package edu.byu.cs.tweeter.server.dao;
 
+import java.util.List;
+
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingCountRequest;
@@ -22,6 +25,7 @@ public interface IUserDAO {
     LogoutResponse logout(LogoutRequest request);
     GetFollowersCountResponse getFollowersCount(GetFollowersCountRequest request);
     GetFollowingCountResponse getFollowingCount(GetFollowingCountRequest request);
+    void addUserBatch(List<User> users);
     void incrementFollow(FollowRequest request);
     void decrementFollow(UnfollowRequest request);
 }

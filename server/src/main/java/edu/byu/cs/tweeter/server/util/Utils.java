@@ -94,32 +94,20 @@ public class Utils {
         return (new Gson()).fromJson(value, returnType);
     }
 
-//    public static Pair<PostStatusRequest, String[]> handleSQSEvent (SQSEvent event) {
-//        List<String> followerAliases = new ArrayList<>();
-//
-//        //TODO: Do we ever get more than one record?
-//        for (SQSEvent.SQSMessage msg : event.getRecords()) {
-//            String[] requestAndAliases = msg.getBody().split("\\?");
-//            String requestString = requestAndAliases[0];
-//            String[] aliases = requestAndAliases[1].split(",");
-//        }
-//        SQSEvent.SQSMessage msg = event.getRecords().get(0);
-//        String jsonString = msg.getBody();
-//        return Utils.deserialize(jsonString, PostStatusRequest.class);
-//    }
-
     public static SendMessageResult sendToSQS(String messageBody, String url) {
         SendMessageRequest request = new SendMessageRequest()
                 .withQueueUrl(url)
-                .withMessageBody(messageBody);
+                .withMessageBody(messageBody)
+                .withDelaySeconds(1);
+
         AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
         SendMessageResult result  = sqs.sendMessage(request);
 
         return result;
     }
 
-    public static final String POST_STATUS_QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/754020789969/cs340PostStatusQueue";
-    public static final String UPDATE_FEED_QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/754020789969/cs340UpdateFeedQueue";
-    public static final int BATCH_NUM = 100;
+    public static final String POST_STATUS_QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/754020789969/cs340PostStatusQueueTwo";
+    public static final String UPDATE_FEED_QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/754020789969/cs340UpdateFeedQueueTwo";
+    public static final int NUM_IN_BATCH = 25;
 
 }

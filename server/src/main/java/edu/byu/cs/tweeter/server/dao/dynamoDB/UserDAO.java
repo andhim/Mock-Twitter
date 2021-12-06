@@ -1,13 +1,16 @@
 package edu.byu.cs.tweeter.server.dao.dynamoDB;
 
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -30,11 +33,14 @@ import edu.byu.cs.tweeter.server.dao.IUserDAO;
 
 public class UserDAO implements IUserDAO {
     private static final String PARTITION_KEY = "alias";
+    private static final String TABLE_NAME = "User";
 
     private Table table;
+    private DynamoDB dynamoDB;
 
-    public UserDAO(Table userTable) {
+    public UserDAO(Table userTable, DynamoDB dynamoDB) {
         this.table = userTable;
+        this.dynamoDB = dynamoDB;
     }
 
     @Override
@@ -149,6 +155,35 @@ public class UserDAO implements IUserDAO {
             updateCount(request.getCurrUserAlias(), "followeeCount", -1);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void addUserBatch(List<User> users) {
+
+        // Constructor for TableWriteItems takes the name of the table, which I have stored in TABLE_USER
+        TableWriteItems items = new TableWriteItems(TABLE_NAME);
+
+        // Add each user into the TableWriteItems object
+        for (User user : users) {
+            Item item = new Item()
+                    .withPrimaryKey("alias", user.getAlias())
+                    .withString("firstName", user.getFirstName())
+                    .withString("lastName", user.getLastName())
+                    .withString("imageURL", user.getImageUrl());
+            items.addItemToPut(item);
+
+            // 25 is the maximum number of items allowed in a single batch write.
+            // Attempting to write more than 25 items will result in an exception being thrown
+            if (items.getItemsToPut() != null && items.getItemsToPut().size() == 25) {
+                DAOUtils.loopBatchWrite(items, dynamoDB);
+                items = new TableWriteItems(TABLE_NAME);
+            }
+        }
+
+        // Write any leftover items
+        if (items.getItemsToPut() != null && items.getItemsToPut().size() > 0) {
+            DAOUtils.loopBatchWrite(items, dynamoDB);
         }
     }
 

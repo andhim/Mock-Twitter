@@ -67,7 +67,7 @@ public class FeedDAO implements IFeedDAO {
                 statuses.add(status);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to get feeds");
+            throw new RuntimeException("Failed to get feeds:" + e.getMessage());
         }
 
         return new GetFeedResponse(Utils.checkHasMore(items), statuses);
@@ -95,34 +95,22 @@ public class FeedDAO implements IFeedDAO {
                         .withList("mentions", status.getMentions());
 
                 items.addItemToPut(item);
-
                 if (items.getItemsToPut() != null && items.getItemsToPut().size() == 25) {
-                    loopBatchWrite(items);
+                    DAOUtils.loopBatchWrite(items, dynamoDB);
                     items = new TableWriteItems(TABLE_NAME);
+
                 }
             }
-
             // Write any leftover items
             if (items.getItemsToPut() != null && items.getItemsToPut().size() > 0) {
-                loopBatchWrite(items);
+                DAOUtils.loopBatchWrite(items, dynamoDB);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Fail to post a feed");
+            throw new RuntimeException("Failed to post a feed:" + e.getMessage());
         }
         return new PostStatusResponse();
     }
 
-    private void loopBatchWrite(TableWriteItems items) {
-        BatchWriteItemOutcome outcome = dynamoDB.batchWriteItem(items);
-        System.out.println("Wrote feed batch");
 
-        // Check the outcome for items that didn't make it onto the table
-        // If any were not added to the table, try again to write the batch
-        while (outcome.getUnprocessedItems().size() > 0) {
-            Map<String, List<WriteRequest>> unprocessedItems = outcome.getUnprocessedItems();
-            outcome = dynamoDB.batchWriteItemUnprocessed(unprocessedItems);
-            System.out.println("Wrote more Feeds");
-        }
-    }
 
 }
