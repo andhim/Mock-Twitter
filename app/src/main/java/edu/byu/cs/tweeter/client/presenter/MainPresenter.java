@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
@@ -30,6 +31,7 @@ public class MainPresenter extends Presenter implements UserService.LogoutObserv
         super(view);
         this.statusService = getStatusService();
         //TODO: other services
+
     }
 
     public void logout(AuthToken authToken) {
