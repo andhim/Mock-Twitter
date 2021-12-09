@@ -16,7 +16,7 @@ public class User implements Comparable<User>, Serializable {
 
     /**
      * Allows construction of the object from Json. Private so it won't be called by other code.
-     * Made public for testing
+     * Made public for testinggit p
      */
     public User() {}
 
